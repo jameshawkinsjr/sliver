@@ -3,10 +3,6 @@
 </p>
 
 _sliver_ is a top-down game about searching for a key in darkness with limited sources of light.
-Implementation Timeline
-    * Most important category
-    * Daily breakdown
-    * Aim to be done by Friday
     
 ## Background and Overview
 
@@ -35,3 +31,18 @@ Implementation Timeline
    * Canvas
      * Tool used to build and display graphics using HTML and Javascript
      * Needed to build the project.
+
+### Implementation Timeline
+* Thursday
+    * Have skeleton of project built
+    * Basic user movement and collision detection
+    * Understand how to build maps
+* Friday
+    * Building in the lighting / darkness
+* Saturday
+    * Adding in the ability to pick up items and progress to additional levels
+* Sunday
+    * Enemies
+* Monday
+    * Turn in project
+    
