@@ -1,5 +1,7 @@
 <p align="center">
+      <a href="https://github.com/jameshawkinsjr/sliver">
     <img src="https://github.com/jameshawkinsjr/sliver/blob/master/sliver_logo.png" alt="logo" width="150">
+    </a>
 </p>
 
 _sliver_ is a top-down game about searching for a key in darkness with limited sources of light.
