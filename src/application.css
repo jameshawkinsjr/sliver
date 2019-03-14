@@ -1,0 +1,130 @@
+body {
+    /* background: black; */
+    background: #cacaca
+    cursor: url(./images/flashlight.png), pointer;
+    font-family: 'Quicksand', sans-serif;
+}
+.header{
+    font-family: 'Arima Madurai', cursive;
+    text-align: center;
+    color: white;
+    font-size: 60px;
+}
+
+
+.fade-in-1 {
+    -webkit-animation: fade-in 2s 1;
+}
+
+.fade-in-2 {
+    -webkit-animation: fade-in 2s 1;
+    -webkit-animation: flicker 5s infinite;
+}
+.fade-in-3 {
+    -webkit-animation: fade-in 3s 1;
+}
+.fade-in-4 {
+    -webkit-animation: fade-in 4s 1;
+}
+.fade-in-5 {
+    -webkit-animation: fade-in 5s 1;
+}
+.fade-in-6 {
+    -webkit-animation: fade-in 6s 1;
+}
+
+@-webkit-keyframes flicker
+{
+    0% {opacity:0;}
+    4% {opacity:0;}
+    5% {opacity:.5;}
+    7% {opacity:0;}
+    10% {opacity:.5;}
+    12% {opacity:1;}
+}
+@-webkit-keyframes fade-in
+{
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+main {
+    justify-content: center;
+    align-items: center;
+}
+
+
+.sidebar-column {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+}
+
+
+.sidebar-column:hover {
+    color: #d7f04ba2;
+    background: radial-gradient(#797939, #000000, #0e0e0e);
+    -webkit-animation: fade-in 4s;
+    opacity: 1;
+}
+
+@-webkit-keyframes fade-in {
+    0% {opacity:0;}
+    100% {opacity:1;}
+} 
+
+.sidebar-column h2 {
+    font-size: 14px;
+}
+.sidebar-column p {
+    font-size: 14px;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    border: 1px solid red;
+    /* -webkit-animation: unfoldIn 10s 1; */
+    /* background-size: 10px 10px;
+    background-image: linear-gradient(to right, rgb(12, 12, 12) 1px, transparent 1px), linear-gradient(to bottom, rgb(19, 19, 19) 1px, transparent 1px); */
+
+}
+
+@keyframes unfoldIn {
+    0% {
+        border: 1px solid white;
+        transform:scaleY(.001) scaleX(0);
+    }
+    30% {
+        transform:scaleY(.001) scaleX(1);
+    }
+    40% {
+        border: 1px solid white;
+        transform:scaleY(1) scaleX(1);
+    }
+    100% {
+        border: 1px solid black;
+    }
+  }
+/*   
+  @keyframes unfoldOut {
+    0% {
+      transform:scaleY(1) scaleX(1);
+    }
+    50% {
+      transform:scaleY(.005) scaleX(1);
+    }
+    100% {
+      transform:scaleY(.005) scaleX(0);
+    }
+  } */
