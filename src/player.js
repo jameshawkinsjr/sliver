@@ -9,8 +9,9 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 5;
-        this.stepOfMovement = 2.5;
+        this.stepOfMovement = 2;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+        this.jumpPower = 100;
         
 
         // this.drawPlayer = () => {
@@ -26,6 +27,12 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.c.fill();
         };
 
+        Player.prototype.regenerate = () => {
+            if (this.jumpPower < 100) {
+                this.jumpPower += 1;
+            }
+        }
+
         Player.prototype.createGradient = (inputRadius) => {
             this.grad = this.c.createRadialGradient(this.x, this.y, inputRadius / 5, this.x, this.y, inputRadius);
             this.grad.addColorStop(0, this.color);
@@ -34,30 +41,34 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
 
         Player.prototype.movePlayer = () => {
             if (38 in keysDown || 87 in keysDown) { // === UP
-                if (32 in keysDown && this.y > 0) {
-                    this.y -= this.stepOfMovement * 2;
+                if (32 in keysDown && this.y > 0 && this.jumpPower > 5) {
+                    this.y -= this.stepOfMovement * 3;
+                    this.jumpPower -= 5;
                 } else if (this.y > 0) {
                     this.y -= this.stepOfMovement;
                 }
             }
             if (40 in keysDown || 83 in keysDown) { // === DOWN
-                if (32 in keysDown && this.y < innerHeight) {
-                    this.y += this.stepOfMovement * 2;
-                } else if (this.y < innerHeight) {
+                if (32 in keysDown && this.y < window.canvasHeight && this.jumpPower > 5) {
+                    this.y += this.stepOfMovement * 3;
+                    this.jumpPower -= 5;
+                } else if (this.y < window.canvasHeight) {
                     this.y += this.stepOfMovement;
                 }
             }
             if (37 in keysDown || 65 in keysDown) { // === LEFT
-                if (32 in keysDown && this.x > 0) {
-                    this.x -= this.stepOfMovement * 2;
+                if (32 in keysDown && this.x > 0 && this.jumpPower > 5) {
+                    this.x -= this.stepOfMovement * 3;
+                    this.jumpPower -= 5;
                 } else if (this.x > 0) {
                     this.x -= this.stepOfMovement;
                 }
             }
             if (39 in keysDown || 68 in keysDown) { // === RIGHT
-                if (32 in keysDown && this.x < innerWidth) {
-                    this.x += this.stepOfMovement * 2;
-                } else if (this.x < innerWidth) {
+                if (32 in keysDown && this.x < window.canvasWidth && this.jumpPower > 5) {
+                    this.x += this.stepOfMovement * 3;
+                    this.jumpPower -= 5;
+                } else if (this.x < window.canvasWidth) {
                     this.x += this.stepOfMovement;
                 }
             }
@@ -108,6 +119,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.movePlayer();
             this.moveFlashlight();
             this.improveFlashlight();
+            this.regenerate();
             this.createGradient(this.currentRadius);
             this.drawFlashlight(this.currentRadius);
             // this.drawPlayer();

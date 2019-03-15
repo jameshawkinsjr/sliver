@@ -1,5 +1,7 @@
 var Player = require('./player');
 
+
+// Compatibility with multiple browsers
 window.requestAnimFrame = (function(){ 
     return  window.requestAnimationFrame       ||  
             window.webkitRequestAnimationFrame ||  
@@ -14,17 +16,17 @@ window.requestAnimFrame = (function(){
 document.addEventListener("DOMContentLoaded", function(event){
     let canvas = document.getElementById("game-canvas");
     let context = canvas.getContext("2d");
-    let innerWidth = context.canvas.width;
-    let innerHeight = context.canvas.height;
+    window.canvasWidth = context.canvas.width;
+    window.canvasHeight = context.canvas.height;
 
 
     // Mouse Positioning
     window.mouse = { x: 0, y: 0, };
     const getMousePos = (canvas, e) => {
-        let canvasBound = canvas.getBoundingClientRect();
+        let canvasBoundary = canvas.getBoundingClientRect();
         return {
-        x: e.clientX - canvasBound.left,
-        y: e.clientY - canvasBound.top
+        x: e.clientX - canvasBoundary.left,
+        y: e.clientY - canvasBoundary.top
         };
     };
     addEventListener('mousemove', ( (e) => {
@@ -40,23 +42,27 @@ document.addEventListener("DOMContentLoaded", function(event){
     addEventListener( "keyup",   function (e) { delete keysDown[e.keyCode]; } );
     
 
+
+    // Create Player
     let player;
     const createPlayer = () => {
-        player = new Player(context, innerWidth/2, innerHeight/2, 0, 60, 100, '#797939', 'black');
+        player = new Player(context, canvasWidth/2, canvasHeight/2, 0, 60, 100, '#797939', 'black');
     }
 
 
+    // Game initialize
     const init = () => {
         createPlayer();
     };
 
+    // Game animation
     const animate = () => {
-        requestAnimationFrame(animate);
-        context.clearRect(0, 0, innerWidth, innerHeight);
-        
+        requestAnimFrame(animate);
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
         player.update();
     };
 
+    // Play game
     init();
     animate();
 
