@@ -40,9 +40,9 @@ document.addEventListener("DOMContentLoaded", function(event){
     addEventListener( "keyup",   function (e) { delete keysDown[e.keyCode]; } );
     
 
-    let newPlayer;
+    let player;
     const createPlayer = () => {
-        newPlayer = new Player(context, innerWidth/2, innerHeight/2, 0, 60, 100, '#797939', 'black');
+        player = new Player(context, innerWidth/2, innerHeight/2, 0, 60, 100, '#797939', 'black');
     }
 
 
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function(event){
         requestAnimationFrame(animate);
         context.clearRect(0, 0, innerWidth, innerHeight);
         
-        newPlayer.update();
+        player.update();
     };
 
     init();
