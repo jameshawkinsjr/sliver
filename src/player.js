@@ -8,23 +8,31 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         this.color2 = color2;
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
-        this.degreeOfRotation = 5;
-        this.stepOfMovement = 2;
+        this.degreeOfRotation = 4;
+        this.stepOfMovement = 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         
 
-        // this.drawPlayer = () => {
-        //     const sprite = document.getElementById('sprite');
-        //     this.c.drawImage(sprite, 0, 0, 305, 231, this.x, this.y, 60, 46);
-        // }
+        Player.prototype.drawPlayer = function(direction){
+            const sprite = document.getElementById('sprite');
+            this.c.clearRect(0,0,0,0);
+            this.c.save();
+            this.c.drawImage(sprite, 0, 0, 305, 231, this.x -10, this.y - 10, 30, 23);		
+            this.c.rotate(direction);
+            this.c.setTransform(1, 0, 0, 1, 0, 0);
+            this.c.translate(0,0);
+            this.c.restore();
+        };
 
         Player.prototype.drawFlashlight = (radius) => {
+            this.c.save();
             this.c.beginPath(this.x, this.y);
             this.c.arc(this.x, this.y, radius, this.startAngle, this.endAngle, false);
             this.c.lineTo(this.x, this.y);
             this.c.fillStyle = this.grad;
             this.c.fill();
+            this.c.restore();
         };
 
         Player.prototype.regenerate = () => {
@@ -104,26 +112,35 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.directionFacing = (((this.centerDegree % 360) - 90) * Math.PI / 180);
             this.startAngle = this.directionFacing - (this.flashlightAngle / 2);
             this.endAngle = this.directionFacing + (this.flashlightAngle / 2);
+            this.drawPlayer(this.directionFacing);
         };
 
-        Player.prototype.improveFlashlight = () => {
+        Player.prototype.changeFlashlight = () => {
             if (49 in keysDown) { // === 1
                 this.currentRadius = this.radius * 2;
-            }
-            else if (50 in keysDown) { // === 2
+                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+            } else if (50 in keysDown) { // === 2
                 this.currentRadius = this.radius;
+                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+            } else if (51 in keysDown) { // === 3
+                this.flashlightAngle = ((360) * Math.PI / 180);
+                this.currentRadius = this.radius * .7;
             }
         };
         
         Player.prototype.update = () => {
             this.movePlayer();
             this.moveFlashlight();
-            this.improveFlashlight();
+            this.changeFlashlight();
             this.regenerate();
+            
+        };
+
+        Player.prototype.draw = () => {
             this.createGradient(this.currentRadius);
             this.drawFlashlight(this.currentRadius);
-            // this.drawPlayer();
+            this.drawPlayer(this.directionFacing);
         };
-    };
+    }
 
 module.exports = Player;

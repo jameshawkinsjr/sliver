@@ -1,5 +1,4 @@
-var Player = require('./player');
-
+var Game = require('./game');
 
 // Compatibility with multiple browsers
 window.requestAnimFrame = (function(){ 
@@ -21,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function(event){
 
 
     // Mouse Positioning
-    window.mouse = { x: 0, y: 0, };
+    window.mouse = { x: canvasWidth/2, y: 0, };
     const getMousePos = (canvas, e) => {
         let canvasBoundary = canvas.getBoundingClientRect();
         return {
@@ -41,29 +40,10 @@ document.addEventListener("DOMContentLoaded", function(event){
     addEventListener( "keydown", function (e) { keysDown[e.keyCode] = true; } );
     addEventListener( "keyup",   function (e) { delete keysDown[e.keyCode]; } );
     
-
-
-    // Create Player
-    let player;
-    const createPlayer = () => {
-        player = new Player(context, canvasWidth/2, canvasHeight/2, 0, 60, 100, '#797939', 'black');
-    }
-
-
-    // Game initialize
-    const init = () => {
-        createPlayer();
-    };
-
-    // Game animation
-    const animate = () => {
-        requestAnimFrame(animate);
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
-        player.update();
-    };
-
     // Play game
-    init();
-    animate();
+    let game = new Game(context);
+    game.init();
+    game.animate();
+    
 
 });
