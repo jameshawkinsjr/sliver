@@ -5,8 +5,8 @@ html {
 }
 
 body {
-    background: black;
-    /* background: #cacaca */
+    /* background: black; */
+    background: #cacaca
     font-family: 'Quicksand', sans-serif;
 }
 .header{

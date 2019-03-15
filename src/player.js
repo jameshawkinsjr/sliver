@@ -1,4 +1,4 @@
-function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2) {
+function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2, map) {
         this.c = context;
         this.x = startX;
         this.y = startY;
@@ -6,10 +6,11 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         this.currentRadius = radius;
         this.color = color;
         this.color2 = color2;
+        this.map = map;
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
-        this.stepOfMovement = 1.7;
+        this.stepOfMovement = 5; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         
@@ -57,10 +58,10 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
                 }
             }
             if (40 in keysDown || 83 in keysDown) { // === DOWN
-                if (32 in keysDown && this.y < window.canvasHeight && this.jumpPower > 5) {
+                if (32 in keysDown && this.y < this.map.height && this.jumpPower > 5) {
                     this.y += this.stepOfMovement * 3;
                     this.jumpPower -= 5;
-                } else if (this.y < window.canvasHeight) {
+                } else if (this.y < this.map.height) {
                     this.y += this.stepOfMovement;
                 }
             }
@@ -73,10 +74,10 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
                 }
             }
             if (39 in keysDown || 68 in keysDown) { // === RIGHT
-                if (32 in keysDown && this.x < window.canvasWidth && this.jumpPower > 5) {
+                if (32 in keysDown && this.x < this.map.width && this.jumpPower > 5) {
                     this.x += this.stepOfMovement * 3;
                     this.jumpPower -= 5;
-                } else if (this.x < window.canvasWidth) {
+                } else if (this.x < this.map.width) {
                     this.x += this.stepOfMovement;
                 }
             }
@@ -133,6 +134,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.moveFlashlight();
             this.changeFlashlight();
             this.regenerate();
+            console.log(this.x, this.y);
             
         };
 

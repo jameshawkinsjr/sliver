@@ -15,16 +15,17 @@ function Map(inputMap){
         context.canvas.width = this.width;
         context.canvas.height = this.height;		
         
-        let color1 = "#000000";
-        let color2 = "#0c0c0c";
+        let color = "#000000";
         context.save();
         for (let x = 0, i = 0; i < this.map.length; x+=this.rowWidth, i++) {
             for (let y = 0, j=0; j < this.map.length; y+=this.rowHeight, j++) {            
-                context.beginPath();			
-                context.rect(x, y, this.rowWidth, this.rowHeight);
-                context.fillStyle = (this.map[i][j] === 0 ? color1 : color2);
-                context.fill();
-                context.closePath();
+                if (this.map[j][i] === 1) {
+                    context.beginPath();			
+                    context.rect(x, y, this.rowWidth, this.rowHeight);
+                    context.fillStyle = color;
+                    context.fill();
+                    context.closePath();
+                }
             }
         }		
         context.restore();	
@@ -49,8 +50,8 @@ function Map(inputMap){
         sy = yView;
         
         // dimensions of cropped image			
-        sWidth =  context.canvas.width;
-        sHeight = context.canvas.height;
+        sWidth =  canvasWidth;
+        sHeight = canvasHeight;
 
         // if cropped image is smaller than canvas we need to change the source dimensions
         if(this.image.width - sx < sWidth){
