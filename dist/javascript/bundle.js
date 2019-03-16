@@ -107,7 +107,7 @@ function Game(context) {
   Game.prototype.init = function () {
     gameMap = new Map(_this.map);
     gameMap.generate();
-    player = new Player(context, 0, 0, 0, 60, 100, '#797939', 'black', gameMap);
+    player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap);
   };
 
   Game.prototype.update = function () {
@@ -119,8 +119,8 @@ function Game(context) {
     context.save();
     context.translate(player.x - canvasWidth, player.y - canvasHeight);
     context.restore();
-    context.drawImage(gameMap.image, player.x - canvasWidth / 2, player.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
     player.draw();
+    context.drawImage(gameMap.image, player.x - canvasWidth / 2, player.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
   };
 
   Game.prototype.animate = function () {
@@ -260,7 +260,7 @@ exports.map2 = map2;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2, map) {
+function Player(context, centerDegree, flashlightWidth, radius, color, color2, map) {
   var _this = this;
 
   this.c = context;
@@ -274,7 +274,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
   this.flashlightWidth = flashlightWidth;
   this.centerDegree = centerDegree;
   this.degreeOfRotation = 4;
-  this.stepOfMovement = 1.7; // 1.7;
+  this.stepOfMovement = 5; // 1.7;
 
   this.flashlightAngle = this.flashlightWidth * Math.PI / 180;
   this.jumpPower = 100;
@@ -306,47 +306,80 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
     _this.grad.addColorStop(1, _this.color2);
   };
 
+  Player.prototype.intersectsMap = function (x, y, map) {
+    var xTile = ~~(x / 100);
+    var yTile = ~~(y / 100);
+
+    if (map.map[yTile][xTile] === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   Player.prototype.movePlayer = function () {
     if (38 in keysDown || 87 in keysDown) {
       // === UP
-      if (32 in keysDown && _this.y > 0 && _this.jumpPower > 5) {
-        _this.y -= _this.stepOfMovement * 3;
-        _this.jumpPower -= 5;
-      } else if (_this.y > 0) {
+      if (_this.y > 5 && _this.intersectsMap(_this.x, _this.y - 10, _this.map) === false) {
         _this.y -= _this.stepOfMovement;
       }
     }
 
     if (40 in keysDown || 83 in keysDown) {
       // === DOWN
-      if (32 in keysDown && _this.y < _this.map.height && _this.jumpPower > 5) {
-        _this.y += _this.stepOfMovement * 3;
-        _this.jumpPower -= 5;
-      } else if (_this.y < _this.map.height) {
+      if (_this.y < _this.map.height - 5 && _this.intersectsMap(_this.x, _this.y + 10, _this.map) === false) {
         _this.y += _this.stepOfMovement;
       }
     }
 
     if (37 in keysDown || 65 in keysDown) {
       // === LEFT
-      if (32 in keysDown && _this.x > 0 && _this.jumpPower > 5) {
-        _this.x -= _this.stepOfMovement * 3;
-        _this.jumpPower -= 5;
-      } else if (_this.x > 0) {
+      if (_this.x > 5 && _this.intersectsMap(_this.x - 10, _this.y, _this.map) === false) {
         _this.x -= _this.stepOfMovement;
       }
     }
 
     if (39 in keysDown || 68 in keysDown) {
       // === RIGHT
-      if (32 in keysDown && _this.x < _this.map.width && _this.jumpPower > 5) {
-        _this.x += _this.stepOfMovement * 3;
-        _this.jumpPower -= 5;
-      } else if (_this.x < _this.map.width) {
+      if (_this.x < _this.map.width - 5 && _this.intersectsMap(_this.x + 10, _this.y, _this.map) === false) {
         _this.x += _this.stepOfMovement;
       }
     }
-  };
+  }; // Player.prototype.movePlayer = () => {
+  //     if (38 in keysDown || 87 in keysDown) { // === UP
+  //         if (32 in keysDown && this.y > 0 && this.jumpPower > 5) {
+  //             this.y -= this.stepOfMovement * 3;
+  //             this.jumpPower -= 5;
+  //         } else if (this.y > 0) {
+  //             this.y -= this.stepOfMovement;
+  //         }
+  //     }
+  //     if (40 in keysDown || 83 in keysDown) { // === DOWN
+  //         if (32 in keysDown && this.y < this.map.height && this.jumpPower > 5) {
+  //             this.y += this.stepOfMovement * 3;
+  //             this.jumpPower -= 5;
+  //         } else if (this.y < this.map.height) {
+  //             this.y += this.stepOfMovement;
+  //         }
+  //     }
+  //     if (37 in keysDown || 65 in keysDown) { // === LEFT
+  //         if (32 in keysDown && this.x > 0 && this.jumpPower > 5) {
+  //             this.x -= this.stepOfMovement * 3;
+  //             this.jumpPower -= 5;
+  //         } else if (this.x > 0) {
+  //             this.x -= this.stepOfMovement;
+  //         }
+  //     }
+  //     if (39 in keysDown || 68 in keysDown) { // === RIGHT
+  //         if (32 in keysDown && this.x < this.map.width && this.jumpPower > 5) {
+  //             this.x += this.stepOfMovement * 3;
+  //             this.jumpPower -= 5;
+  //         } else if (this.x < this.map.width) {
+  //             this.x += this.stepOfMovement;
+  //         }
+  //     }
+  // };
+
 
   Player.prototype.getTheta = function (cx, cy, ex, ey) {
     var dy = ey - cy;

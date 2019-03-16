@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function(event){
     window.canvasWidth = context.canvas.width;
     window.canvasHeight = context.canvas.height;
 
-
     // Mouse Positioning
     window.mouse = { x: canvasWidth/2, y: 0, };
     const getMousePos = (canvas, e) => {

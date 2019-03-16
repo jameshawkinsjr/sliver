@@ -31,7 +31,7 @@ function Game(context){
     Game.prototype.init = () => {
         gameMap = new Map(this.map);
         gameMap.generate();
-        player = new Player(context, 0, 0, 0, 60, 100, '#797939', 'black', gameMap);
+        player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap);
     };
 
     Game.prototype.update = () => {
@@ -42,9 +42,9 @@ function Game(context){
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.save();
         context.translate(player.x - canvasWidth, player.y - canvasHeight);
-        context.restore();
-        context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
+        context.restore(); 
         player.draw();
+        context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
     }
 
     Game.prototype.animate = () => {

@@ -1,4 +1,4 @@
-function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2, map) {
+function Player(context, centerDegree, flashlightWidth, radius, color, color2, map) {
         this.c = context;
         this.x = canvasWidth/2;
         this.y = canvasHeight/2;
@@ -10,11 +10,10 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
-        this.stepOfMovement = 1.7; // 1.7;
+        this.stepOfMovement = 5; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         
-
         Player.prototype.drawPlayer = function(direction){
             const sprite = document.getElementById('sprite');
             this.c.save();
@@ -40,40 +39,72 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.grad.addColorStop(1, this.color2);
         };
 
+        Player.prototype.intersectsMap = (x, y, map) => {
+            let xTile = ~~(x/100);
+            let yTile = ~~(y/100);
+            if (map.map[yTile][xTile] === 1){
+                return true;
+            } else {
+                return false;
+            }
+        }
+            
         Player.prototype.movePlayer = () => {
             if (38 in keysDown || 87 in keysDown) { // === UP
-                if (32 in keysDown && this.y > 0 && this.jumpPower > 5) {
-                    this.y -= this.stepOfMovement * 3;
-                    this.jumpPower -= 5;
-                } else if (this.y > 0) {
+                if (this.y > 5 && this.intersectsMap(this.x, this.y - 10, this.map) === false) {
                     this.y -= this.stepOfMovement;
                 }
             }
             if (40 in keysDown || 83 in keysDown) { // === DOWN
-                if (32 in keysDown && this.y < this.map.height && this.jumpPower > 5) {
-                    this.y += this.stepOfMovement * 3;
-                    this.jumpPower -= 5;
-                } else if (this.y < this.map.height) {
+                if (this.y < this.map.height-5 &&  this.intersectsMap(this.x, this.y + 10, this.map) === false) {
                     this.y += this.stepOfMovement;
                 }
             }
             if (37 in keysDown || 65 in keysDown) { // === LEFT
-                if (32 in keysDown && this.x > 0 && this.jumpPower > 5) {
-                    this.x -= this.stepOfMovement * 3;
-                    this.jumpPower -= 5;
-                } else if (this.x > 0) {
+                if (this.x > 5  && this.intersectsMap(this.x - 10, this.y, this.map) === false) {
                     this.x -= this.stepOfMovement;
                 }
             }
             if (39 in keysDown || 68 in keysDown) { // === RIGHT
-                if (32 in keysDown && this.x < this.map.width && this.jumpPower > 5) {
-                    this.x += this.stepOfMovement * 3;
-                    this.jumpPower -= 5;
-                } else if (this.x < this.map.width) {
+                if (this.x < this.map.width-5 &&  this.intersectsMap(this.x + 10, this.y, this.map) === false) {
                     this.x += this.stepOfMovement;
                 }
             }
         };
+        // Player.prototype.movePlayer = () => {
+        //     if (38 in keysDown || 87 in keysDown) { // === UP
+        //         if (32 in keysDown && this.y > 0 && this.jumpPower > 5) {
+        //             this.y -= this.stepOfMovement * 3;
+        //             this.jumpPower -= 5;
+        //         } else if (this.y > 0) {
+        //             this.y -= this.stepOfMovement;
+        //         }
+        //     }
+        //     if (40 in keysDown || 83 in keysDown) { // === DOWN
+        //         if (32 in keysDown && this.y < this.map.height && this.jumpPower > 5) {
+        //             this.y += this.stepOfMovement * 3;
+        //             this.jumpPower -= 5;
+        //         } else if (this.y < this.map.height) {
+        //             this.y += this.stepOfMovement;
+        //         }
+        //     }
+        //     if (37 in keysDown || 65 in keysDown) { // === LEFT
+        //         if (32 in keysDown && this.x > 0 && this.jumpPower > 5) {
+        //             this.x -= this.stepOfMovement * 3;
+        //             this.jumpPower -= 5;
+        //         } else if (this.x > 0) {
+        //             this.x -= this.stepOfMovement;
+        //         }
+        //     }
+        //     if (39 in keysDown || 68 in keysDown) { // === RIGHT
+        //         if (32 in keysDown && this.x < this.map.width && this.jumpPower > 5) {
+        //             this.x += this.stepOfMovement * 3;
+        //             this.jumpPower -= 5;
+        //         } else if (this.x < this.map.width) {
+        //             this.x += this.stepOfMovement;
+        //         }
+        //     }
+        // };
     
         Player.prototype.getTheta = (cx, cy, ex, ey) => {
             let dy = ey - cy;
