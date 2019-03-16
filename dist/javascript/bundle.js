@@ -86,100 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/camera.js":
-/*!***********************!*\
-  !*** ./src/camera.js ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function Rectangle(left, top, width, height) {
-  this.left = left || 0;
-  this.top = top || 0;
-  this.width = width || 0;
-  this.height = height || 0;
-  this.right = this.left + this.width;
-  this.bottom = this.top + this.height;
-
-  Rectangle.prototype.set = function (left, top,
-  /*optional*/
-  width,
-  /*optional*/
-  height) {
-    this.left = left;
-    this.top = top;
-    this.width = width || this.width;
-    this.height = height || this.height;
-    this.right = this.left + this.width;
-    this.bottom = this.top + this.height;
-  };
-
-  Rectangle.prototype.within = function (r) {
-    return r.left <= this.left && r.right >= this.right && r.top <= this.top && r.bottom >= this.bottom;
-  };
-
-  Rectangle.prototype.overlaps = function (r) {
-    return this.left < r.right && r.left < this.right && this.top < r.bottom && r.top < this.bottom;
-  };
-}
-
-function Camera(map) {
-  this.x = 0;
-  this.y = 0;
-  this.xMovement = 0;
-  this.yMovement = 0;
-  this.xDeadZone = 0;
-  this.yDeadZone = 0;
-  this.followed = null;
-  this.viewportRect = new Rectangle(this.x, this.y, canvasWidth, canvasHeight);
-  this.worldRect = new Rectangle(0, 0, map.width, map.height);
-
-  Camera.prototype.follow = function (player, xDeadZone, yDeadZone) {
-    this.followed = player;
-    this.xDeadZone = xDeadZone;
-    this.yDeadZone = yDeadZone;
-  };
-
-  Camera.prototype.update = function () {
-    if (this.followed != null) {
-      this.x = this.followed.x;
-      this.y = this.followed.y; // if(this.followed.x - this.x  + this.xDeadZone > canvasWidth) {
-      //     this.x = this.followed.x - (canvasWidth - this.xDeadZone);
-      // } else if (this.followed.x  - this.xDeadZone < this.x) {
-      //     this.x = this.followed.x  - this.xDeadZone;
-      // }
-      // if(this.followed.y - this.y + this.yDeadZone > canvasHeight) {
-      //     this.y = this.followed.y - (canvasHeight - this.yDeadZone);
-      // } else if(this.followed.y - this.yDeadZone < this.y) {
-      //     this.y = this.followed.y - this.yDeadZone;
-      // }
-
-      console.log(this.x, this.y);
-    } // update viewportRect
-
-
-    this.viewportRect.set(this.x, this.y); // don't let camera leaves the world's boundary
-    // if(!this.viewportRect.within(this.worldRect))
-    // {
-    // 	if(this.viewportRect.left < this.worldRect.left)
-    // 		this.x = this.worldRect.left;
-    // 	if(this.viewportRect.top < this.worldRect.top)					
-    // 		this.y = this.worldRect.top;
-    // 	if(this.viewportRect.right > this.worldRect.right)
-    // 		this.x = this.worldRect.right - canvasWidth;
-    // 	if(this.viewportRect.bottom > this.worldRect.bottom)					
-    // 		this.y = this.worldRect.bottom - canvasHeight;
-    // }
-  };
-}
-
-module.exports = Camera;
-
-/***/ }),
-
 /***/ "./src/game.js":
 /*!*********************!*\
   !*** ./src/game.js ***!
@@ -187,75 +93,35 @@ module.exports = Camera;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 var Player = __webpack_require__(/*! ./player */ "./src/player.js");
 
-var Map = __webpack_require__(/*! ./map */ "./src/map.js"); // var map1 = require('./maps').map1
-// var map2 = require('./maps').map2
-
-
-var Camera = __webpack_require__(/*! ./camera */ "./src/camera.js");
+var Map = __webpack_require__(/*! ./map */ "./src/map.js");
 
 function Game(context) {
   var _this = this;
 
-  // this.map = [
-  //     [0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,0],
-  //     [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-  //     [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
-  //     [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  //     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //     [1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  // ];
-  this.map = [[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1]]; // this.map = [
-  //     [1, 1, 1, 1, 1, 0, 0 ],
-  //     [0, 0, 0, 0, 1, 0, 1 ],
-  //     [0, 1, 1, 0, 1, 0, 1 ],
-  //     [0, 1, 1, 0, 1, 0, 1 ],
-  //     [0, 0, 0, 0, 0, 0, 0 ],
-  //     [0, 1, 1, 0, 1, 0, 1 ],
-  //     [0, 0, 1, 0, 1, 0, 1 ]
-  // ];
-
-  var player = void 0;
-  var gameMap = void 0;
-  var camera = void 0; // Game initialize
+  this.map = [[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+  var player;
+  var gameMap;
 
   Game.prototype.init = function () {
     gameMap = new Map(_this.map);
     gameMap.generate();
-    player = new Player(context, 0, 0, 0, 360, 200, '#797939', 'black', gameMap);
-    camera = new Camera(gameMap);
-    camera.follow(player, 0, 0);
+    player = new Player(context, 0, 0, 0, 60, 100, '#797939', 'black', gameMap);
   };
 
   Game.prototype.update = function () {
     player.update();
-    camera.update();
   };
 
   Game.prototype.draw = function () {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.save();
+    context.translate(player.x - canvasWidth, player.y - canvasHeight);
+    context.restore();
+    context.drawImage(gameMap.image, player.x - canvasWidth / 2, player.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
     player.draw();
-    gameMap.draw(context, camera.x, camera.y);
-  }; // Game animation
-
+  };
 
   Game.prototype.animate = function () {
     requestAnimFrame(_this.animate);
@@ -277,10 +143,9 @@ module.exports = Game;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var Game = __webpack_require__(/*! ./game */ "./src/game.js");
 
-
-var Game = __webpack_require__(/*! ./game */ "./src/game.js"); // Compatibility with multiple browsers
+var Maps = __webpack_require__(/*! ./maps */ "./src/maps.js"); // Compatibility with multiple browsers
 
 
 window.requestAnimFrame = function () {
@@ -334,10 +199,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   !*** ./src/map.js ***!
   \********************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/***/ (function(module, exports) {
 
 function Map(inputMap) {
   this.map = inputMap;
@@ -345,75 +207,49 @@ function Map(inputMap) {
   this.rowHeight = 100;
   this.width = inputMap.length * this.rowWidth;
   this.height = inputMap.length * this.rowHeight;
-  this.floor = null;
-  this.wall = null;
-} // generate an example of a large map
 
+  Map.prototype.generate = function () {
+    var context = document.createElement("canvas").getContext("2d");
+    context.canvas.width = this.width;
+    context.canvas.height = this.height;
+    var color = "#000000";
+    context.save();
 
-Map.prototype.generate = function () {
-  var context = document.createElement("canvas").getContext("2d");
-  context.canvas.width = this.width;
-  context.canvas.height = this.height;
-  var color = "#000000";
-  context.save();
-
-  for (var x = 0, i = 0; i < this.map.length; x += this.rowWidth, i++) {
-    for (var y = 0, j = 0; j < this.map.length; y += this.rowHeight, j++) {
-      if (this.map[j][i] === 1) {
-        context.beginPath();
-        context.rect(x, y, this.rowWidth, this.rowHeight);
-        context.fillStyle = color;
-        context.fill();
-        context.closePath();
+    for (var x = 0, i = 0; i < this.map.length; x += this.rowWidth, i++) {
+      for (var y = 0, j = 0; j < this.map.length; y += this.rowHeight, j++) {
+        if (this.map[j][i] === 1) {
+          context.beginPath();
+          context.rect(x, y, this.rowWidth, this.rowHeight);
+          context.fillStyle = color;
+          context.fill();
+          context.closePath();
+        }
       }
     }
-  }
 
-  context.restore();
-  this.image = new Image();
-  this.image.src = context.canvas.toDataURL("image/png");
-  context = null;
-}; // draw the map adjusted to camera
+    context.restore();
+    this.image = new Image();
+    this.image.src = context.canvas.toDataURL("image/png");
+    context = null;
+  };
+}
 
-
-Map.prototype.draw = function (context, xView, yView) {
-  // easiest way: draw the entire map changing only the destination coordinate in canvas
-  // canvas will cull the image by itself (no performance gaps -> in hardware accelerated environments, at least)
-  //context.drawImage(this.image, 0, 0, this.image.width, this.image.height, -xView, -yView, this.image.width, this.image.height);
-  // didactic way:
-  var sx = void 0,
-      sy = void 0,
-      dx = void 0,
-      dy = void 0;
-  var sWidth = void 0,
-      sHeight = void 0,
-      dWidth = void 0,
-      dHeight = void 0; // offset point to crop the image
-
-  sx = xView;
-  sy = yView; // dimensions of cropped image			
-
-  sWidth = canvasWidth;
-  sHeight = canvasHeight; // if cropped image is smaller than canvas we need to change the source dimensions
-
-  if (this.image.width - sx < sWidth) {
-    sWidth = this.image.width - sx;
-  }
-
-  if (this.image.height - sy < sHeight) {
-    sHeight = this.image.height - sy;
-  } // location on canvas to draw the croped image
-
-
-  dx = 0;
-  dy = 0; // match destination with source to not scale the image
-
-  dWidth = sWidth;
-  dHeight = sHeight;
-  context.drawImage(this.image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-};
-
+;
 module.exports = Map;
+
+/***/ }),
+
+/***/ "./src/maps.js":
+/*!*********************!*\
+  !*** ./src/maps.js ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var map1 = [[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+var map2 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1], [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1], [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]];
+exports.map1 = map1;
+exports.map2 = map2;
 
 /***/ }),
 
@@ -422,17 +258,14 @@ module.exports = Map;
   !*** ./src/player.js ***!
   \***********************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/***/ (function(module, exports) {
 
 function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2, map) {
   var _this = this;
 
   this.c = context;
-  this.x = startX;
-  this.y = startY;
+  this.x = canvasWidth / 2;
+  this.y = canvasHeight / 2;
   this.radius = radius;
   this.currentRadius = radius;
   this.color = color;
@@ -441,36 +274,22 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
   this.flashlightWidth = flashlightWidth;
   this.centerDegree = centerDegree;
   this.degreeOfRotation = 4;
-  this.stepOfMovement = 5; // 1.7;
+  this.stepOfMovement = 1.7; // 1.7;
 
   this.flashlightAngle = this.flashlightWidth * Math.PI / 180;
   this.jumpPower = 100;
 
   Player.prototype.drawPlayer = function (direction) {
     var sprite = document.getElementById('sprite');
-    this.c.clearRect(0, 0, 0, 0);
     this.c.save();
-    this.c.drawImage(sprite, 0, 0, 305, 231, this.x - 10, this.y - 10, 30, 23);
+    this.c.drawImage(sprite, 0, 0, 305, 231, canvasWidth / 2 - 10, canvasHeight / 2 - 10, 30, 23);
+    this.c.beginPath(canvasWidth / 2, canvasHeight / 2);
+    this.c.arc(canvasWidth / 2, canvasHeight / 2, radius, this.startAngle, this.endAngle, false);
+    this.c.lineTo(canvasWidth / 2, canvasHeight / 2);
+    this.c.fillStyle = this.grad;
+    this.c.fill();
     this.c.rotate(direction);
-    this.c.setTransform(1, 0, 0, 1, 0, 0);
-    this.c.translate(0, 0);
     this.c.restore();
-  };
-
-  Player.prototype.drawFlashlight = function (radius) {
-    _this.c.save();
-
-    _this.c.beginPath(_this.x, _this.y);
-
-    _this.c.arc(_this.x, _this.y, radius, _this.startAngle, _this.endAngle, false);
-
-    _this.c.lineTo(_this.x, _this.y);
-
-    _this.c.fillStyle = _this.grad;
-
-    _this.c.fill();
-
-    _this.c.restore();
   };
 
   Player.prototype.regenerate = function () {
@@ -480,7 +299,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
   };
 
   Player.prototype.createGradient = function (inputRadius) {
-    _this.grad = _this.c.createRadialGradient(_this.x, _this.y, inputRadius / 5, _this.x, _this.y, inputRadius);
+    _this.grad = _this.c.createRadialGradient(canvasWidth / 2, canvasHeight / 2, inputRadius / 5, canvasWidth / 2, canvasHeight / 2, inputRadius);
 
     _this.grad.addColorStop(0, _this.color);
 
@@ -529,12 +348,6 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
     }
   };
 
-  Player.prototype.getDistance = function (x1, y1, x2, y2) {
-    var xDistance = x2 - x1;
-    var yDistance = y2 - y1;
-    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-  };
-
   Player.prototype.getTheta = function (cx, cy, ex, ey) {
     var dy = ey - cy;
     var dx = ex - cx;
@@ -545,7 +358,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
   };
 
   Player.prototype.moveFlashlight = function () {
-    var theta = _this.getTheta(mouse.x, mouse.y, _this.x, _this.y);
+    var theta = _this.getTheta(mouse.x, mouse.y, canvasWidth / 2, canvasHeight / 2);
 
     var delta = (_this.centerDegree - theta) % 360;
 
@@ -560,8 +373,6 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
     _this.directionFacing = (_this.centerDegree % 360 - 90) * Math.PI / 180;
     _this.startAngle = _this.directionFacing - _this.flashlightAngle / 2;
     _this.endAngle = _this.directionFacing + _this.flashlightAngle / 2;
-
-    _this.drawPlayer(_this.directionFacing);
   };
 
   Player.prototype.changeFlashlight = function () {
@@ -589,14 +400,10 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
 
     _this.regenerate();
 
-    console.log(_this.x, _this.y);
+    _this.createGradient(_this.currentRadius);
   };
 
   Player.prototype.draw = function () {
-    _this.createGradient(_this.currentRadius);
-
-    _this.drawFlashlight(_this.currentRadius);
-
     _this.drawPlayer(_this.directionFacing);
   };
 }

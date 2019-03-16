@@ -1,7 +1,7 @@
 function Player(context, startX, startY, centerDegree, flashlightWidth, radius, color, color2, map) {
         this.c = context;
-        this.x = startX;
-        this.y = startY;
+        this.x = canvasWidth/2;
+        this.y = canvasHeight/2;
         this.radius = radius;
         this.currentRadius = radius;
         this.color = color;
@@ -10,29 +10,21 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
-        this.stepOfMovement = 5; // 1.7;
+        this.stepOfMovement = 1.7; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         
 
         Player.prototype.drawPlayer = function(direction){
             const sprite = document.getElementById('sprite');
-            this.c.clearRect(0,0,0,0);
             this.c.save();
-            this.c.drawImage(sprite, 0, 0, 305, 231, this.x -10, this.y - 10, 30, 23);		
-            this.c.rotate(direction);
-            this.c.setTransform(1, 0, 0, 1, 0, 0);
-            this.c.translate(0,0);
-            this.c.restore();
-        };
-
-        Player.prototype.drawFlashlight = (radius) => {
-            this.c.save();
-            this.c.beginPath(this.x, this.y);
-            this.c.arc(this.x, this.y, radius, this.startAngle, this.endAngle, false);
-            this.c.lineTo(this.x, this.y);
+            this.c.drawImage(sprite, 0, 0, 305, 231, canvasWidth/2-10, canvasHeight/2-10, 30, 23);
+            this.c.beginPath(canvasWidth/2, canvasHeight/2);
+            this.c.arc(canvasWidth/2, canvasHeight/2, radius, this.startAngle, this.endAngle, false);
+            this.c.lineTo(canvasWidth/2, canvasHeight/2);
             this.c.fillStyle = this.grad;
-            this.c.fill();
+            this.c.fill();		
+            this.c.rotate(direction);
             this.c.restore();
         };
 
@@ -43,7 +35,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         }
 
         Player.prototype.createGradient = (inputRadius) => {
-            this.grad = this.c.createRadialGradient(this.x, this.y, inputRadius / 5, this.x, this.y, inputRadius);
+            this.grad = this.c.createRadialGradient(canvasWidth/2, canvasHeight/2, inputRadius / 5, canvasWidth/2, canvasHeight/2,  inputRadius);
             this.grad.addColorStop(0, this.color);
             this.grad.addColorStop(1, this.color2);
         };
@@ -82,12 +74,6 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
                 }
             }
         };
-        
-        Player.prototype.getDistance = (x1, y1, x2, y2) => {
-            let xDistance = x2-x1;
-            let yDistance = y2-y1;
-            return Math.sqrt( Math.pow(xDistance, 2) + Math.pow(yDistance, 2) )
-        }
     
         Player.prototype.getTheta = (cx, cy, ex, ey) => {
             let dy = ey - cy;
@@ -99,7 +85,7 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
         }
 
         Player.prototype.moveFlashlight = () => {
-            let theta = this.getTheta(mouse.x, mouse.y, this.x, this.y);
+            let theta = this.getTheta(mouse.x, mouse.y, canvasWidth/2, canvasHeight/2);
             let delta = (this.centerDegree - theta) % 360;
             if (delta <= -355 && delta <= 5) {
                 this.centerDegree += theta;
@@ -113,7 +99,6 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.directionFacing = (((this.centerDegree % 360) - 90) * Math.PI / 180);
             this.startAngle = this.directionFacing - (this.flashlightAngle / 2);
             this.endAngle = this.directionFacing + (this.flashlightAngle / 2);
-            this.drawPlayer(this.directionFacing);
         };
 
         Player.prototype.changeFlashlight = () => {
@@ -134,13 +119,11 @@ function Player(context, startX, startY, centerDegree, flashlightWidth, radius, 
             this.moveFlashlight();
             this.changeFlashlight();
             this.regenerate();
-            console.log(this.x, this.y);
+            this.createGradient(this.currentRadius);
             
         };
-
+        
         Player.prototype.draw = () => {
-            this.createGradient(this.currentRadius);
-            this.drawFlashlight(this.currentRadius);
             this.drawPlayer(this.directionFacing);
         };
     }

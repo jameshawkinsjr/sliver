@@ -6,7 +6,7 @@ html {
 
 body {
     /* background: black; */
-    background: #cacaca
+    background: #912929;
     font-family: 'Quicksand', sans-serif;
 }
 .header{
@@ -107,7 +107,7 @@ main {
 }
 
 canvas {
-    border: 1px solid red;
+    /* border: 1px solid red; */
     /* -webkit-animation: unfoldIn 10s 1; */
     /* background-size: 10px 10px;
     background-image: linear-gradient(to right, rgb(12, 12, 12) 1px, transparent 1px), linear-gradient(to bottom, rgb(19, 19, 19) 1px, transparent 1px); */

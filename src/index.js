@@ -1,4 +1,5 @@
 var Game = require('./game');
+var Maps = require('./maps');
 
 // Compatibility with multiple browsers
 window.requestAnimFrame = (function(){ 
