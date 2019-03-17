@@ -7,7 +7,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.startItems = [' [0] No Flashlight', ' [1] High Beams', ' [2] Normal Flashlight'];
+        this.startItems = [' [1] No Flashlight', ' [2] High Beams', ' [3] Normal Flashlight'];
         this.items = [];
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
@@ -15,7 +15,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.stepOfMovement = 4; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
-        this.batteryPower = 100;
+        this.batteryPower = 200;
         this.batteryDrain = .01;
         
         Player.prototype.drawPlayer = (direction) => {
@@ -28,13 +28,19 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.c.fill();		
             this.drawSprite();
             this.c.restore();
-            this.batteryPower -= this.batteryDrain;
+            if (this.batteryPower > 0){
+                this.batteryPower -= this.batteryDrain;
+            } else {
+                this.batteryPower = 0;
+                this.currentRadius = 0;
+                this.batteryDrain = 0;
+            }
         };
 
         Player.prototype.drawSprite = () => {
             const sprite = document.getElementById('sprite');
             this.c.save();
-            this.c.translate((canvasWidth-10)/2, (canvasHeight-10)/2);
+            this.c.translate((canvasWidth+3)/2, (canvasHeight-6)/2);
             this.c.rotate(this.directionFacing);
             this.c.drawImage(sprite, 0, 0, 305, 231, -34,-12, 30, 23);
             this.c.restore();
@@ -136,22 +142,25 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         };
 
         Player.prototype.useItems = () => {
-            if (49 in keysDown) { // === 1
-                this.currentRadius = 0;
-                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                this.batteryDrain = 0
-            } else if (50 in keysDown) { // === 2
-                this.currentRadius = this.radius * 2;
-                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                this.batteryDrain = .05
-            } else if (51 in keysDown) { // === 3
-                this.currentRadius = this.radius;
-                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                this.batteryDrain = .01;
-            } else if (52 in keysDown) { // === 4
-                this.flashlightAngle = ((360) * Math.PI / 180);
-                this.currentRadius = this.radius * 0.7;
-            } else if (53 in keysDown && this.items.includes("[5] battery")) { // === 5
+            if (this.batteryPower > 0) {
+                if (49 in keysDown) { // === 1
+                    this.currentRadius = 0;
+                    this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+                    this.batteryDrain = 0
+                } else if (50 in keysDown) { // === 2
+                    this.currentRadius = this.radius * 2;
+                    this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+                    this.batteryDrain = .05
+                } else if (51 in keysDown) { // === 3
+                    this.currentRadius = this.radius;
+                    this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+                    this.batteryDrain = .01;
+                } else if (52 in keysDown) { // === 4
+                    this.currentRadius = this.radius * 0.7;
+                    this.flashlightAngle = ((360) * Math.PI / 180);
+                }
+            }
+            if (53 in keysDown && this.items.includes("[5] battery")) { // === 5
                 this.batteryPower += 50;
                 this.items.splice( this.items.indexOf("[5] battery"), 1 );
 
