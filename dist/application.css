@@ -5,23 +5,22 @@ html {
 }
 
 body {
-    /* background: black; */
-    background: #912929;
+    background: black;
+    /* background: #292929;      */
     font-family: 'Quicksand', sans-serif;
 }
-.header{
+header{
     font-family: 'Arima Madurai', cursive;
     text-align: center;
-    color: white;
-    font-size: 60px;
+    color: rgba(255, 255, 255, 0.719);
+    font-size: 30px;
+    margin: 10px;
+    padding: 10px;
 }
 
-/* canvas {
-    /* width: 80vw;
-    height: 80vh; */
-    /* width: 400px;
-    height: 400px; */
-/* } */
+h1 {
+    margin: 0;
+}
 
 img {
     display: none;
@@ -31,20 +30,24 @@ img {
 }
 
 .fade-in-2 {
-    -webkit-animation: fade-in 2s 1;
-    -webkit-animation: flicker 5s infinite;
-}
-.fade-in-3 {
     -webkit-animation: fade-in 3s 1;
 }
-.fade-in-4 {
+.fade-in-3 {
     -webkit-animation: fade-in 4s 1;
 }
-.fade-in-5 {
+.fade-in-4 {
     -webkit-animation: fade-in 5s 1;
 }
-.fade-in-6 {
+.fade-in-5 {
     -webkit-animation: fade-in 6s 1;
+}
+.fade-in-6 {
+    -webkit-animation: fade-in 7s 1;
+}
+
+.flicker {
+    -webkit-animation: flicker 5s infinite;
+    -webkit-animation-delay: 5s;
 }
 
 @-webkit-keyframes flicker
@@ -69,8 +72,9 @@ main {
 
 
 .sidebar-column {
-    width: 300px;
-    height: 300px;
+    width: 360px;
+    height: 360px;
+    font-size: 20px;
     border-radius: 50%;
     align-items: center;
     justify-content: center;
@@ -79,10 +83,15 @@ main {
 
 
 .sidebar-column:hover {
-    color: #d7f04ba2;
-    background: radial-gradient(#797939, #000000, #0e0e0e);
+    color: #000000a2;
+    background: radial-gradient(#adad41, #16161680, #0f0f0f4d, #000000);
     -webkit-animation: fade-in 4s;
     opacity: 1;
+}
+
+.controls-description {
+    padding: 0;
+    margin: 0;
 }
 
 @-webkit-keyframes fade-in {
@@ -106,12 +115,9 @@ main {
     flex-direction: column;
 }
 
-canvas {
+#game-canvas {
     /* border: 1px solid red; */
     /* -webkit-animation: unfoldIn 10s 1; */
-    /* background-size: 10px 10px;
-    background-image: linear-gradient(to right, rgb(12, 12, 12) 1px, transparent 1px), linear-gradient(to bottom, rgb(19, 19, 19) 1px, transparent 1px); */
-
 }
 
 @keyframes unfoldIn {
@@ -130,15 +136,3 @@ canvas {
         border: 1px solid black;
     }
   }
-/*   
-  @keyframes unfoldOut {
-    0% {
-      transform:scaleY(1) scaleX(1);
-    }
-    50% {
-      transform:scaleY(.005) scaleX(1);
-    }
-    100% {
-      transform:scaleY(.005) scaleX(0);
-    }
-  } */

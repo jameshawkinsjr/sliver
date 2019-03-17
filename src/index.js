@@ -2,7 +2,7 @@ var Game = require('./game');
 var Maps = require('./maps');
 
 // Compatibility with multiple browsers
-window.requestAnimFrame = (function(){ 
+window.requestAnimFrame = ( () => { 
     return  window.requestAnimationFrame       ||  
             window.webkitRequestAnimationFrame ||  
             window.mozRequestAnimationFrame    ||  
@@ -13,11 +13,12 @@ window.requestAnimFrame = (function(){
             }; 
   })(); 
 
-document.addEventListener("DOMContentLoaded", function(event){
+document.addEventListener("DOMContentLoaded", (event) => {
     let canvas = document.getElementById("game-canvas");
     let context = canvas.getContext("2d");
     window.canvasWidth = context.canvas.width;
     window.canvasHeight = context.canvas.height;
+
 
     // Mouse Positioning
     window.mouse = { x: canvasWidth/2, y: 0, };
@@ -37,8 +38,8 @@ document.addEventListener("DOMContentLoaded", function(event){
     
     // Keyboard Presses
     window.keysDown = {};
-    addEventListener( "keydown", function (e) { keysDown[e.keyCode] = true; } );
-    addEventListener( "keyup",   function (e) { delete keysDown[e.keyCode]; } );
+    addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
+    addEventListener( "keyup",    (e) => { delete keysDown[e.keyCode]; } );
     
     // Play game
     let game = new Game(context);

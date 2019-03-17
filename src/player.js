@@ -7,24 +7,28 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
+        this.items = ['lantern (3)', ' matches'];
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
-        this.stepOfMovement = 5; // 1.7;
+        this.stepOfMovement = 4; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
+        this.batteryPower = 100;
+        this.batteryDrain = .01;
         
-        Player.prototype.drawPlayer = function(direction){
+        Player.prototype.drawPlayer = (direction) => {
             const sprite = document.getElementById('sprite');
             this.c.save();
             this.c.drawImage(sprite, 0, 0, 305, 231, canvasWidth/2-10, canvasHeight/2-10, 30, 23);
             this.c.beginPath(canvasWidth/2, canvasHeight/2);
-            this.c.arc(canvasWidth/2, canvasHeight/2, radius, this.startAngle, this.endAngle, false);
+            this.c.arc(canvasWidth/2, canvasHeight/2, this.currentRadius, this.startAngle, this.endAngle, false);
             this.c.lineTo(canvasWidth/2, canvasHeight/2);
             this.c.fillStyle = this.grad;
             this.c.fill();		
             this.c.rotate(direction);
             this.c.restore();
+            this.batteryPower -= this.batteryDrain;
         };
 
         Player.prototype.regenerate = () => {
@@ -33,10 +37,10 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             }
         }
 
-        Player.prototype.createGradient = (inputRadius) => {
+        Player.prototype.createGradient = (inputRadius, color1, color2) => {
             this.grad = this.c.createRadialGradient(canvasWidth/2, canvasHeight/2, inputRadius / 5, canvasWidth/2, canvasHeight/2,  inputRadius);
-            this.grad.addColorStop(0, this.color);
-            this.grad.addColorStop(1, this.color2);
+            this.grad.addColorStop(0, color1);
+            this.grad.addColorStop(1, color2); 
         };
 
         Player.prototype.intersectsMap = (x, y, map) => {
@@ -44,6 +48,10 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             let yTile = ~~(y/100);
             if (map.map[yTile][xTile] === 1){
                 return true;
+            } else if (map.map[yTile][xTile] === 2){
+                this.items.push("battery");
+                map.map[yTile][xTile]  = 0;
+                return false;
             } else {
                 return false;
             }
@@ -52,60 +60,46 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         Player.prototype.movePlayer = () => {
             if (38 in keysDown || 87 in keysDown) { // === UP
                 if (this.y > 5 && this.intersectsMap(this.x, this.y - 10, this.map) === false) {
-                    this.y -= this.stepOfMovement;
+                    if (32 in keysDown && this.jumpPower > 6) {
+                        this.y -= this.stepOfMovement * 2;
+                        this.jumpPower -= 5;
+                    } else {
+                        this.y -= this.stepOfMovement;
+                    }
                 }
             }
             if (40 in keysDown || 83 in keysDown) { // === DOWN
                 if (this.y < this.map.height-5 &&  this.intersectsMap(this.x, this.y + 10, this.map) === false) {
-                    this.y += this.stepOfMovement;
+                    if (32 in keysDown && this.jumpPower > 5) {
+                        this.y += this.stepOfMovement * 2;
+                        this.jumpPower -= 5;
+                    } else {
+                        this.y += this.stepOfMovement;
+                    }
                 }
             }
             if (37 in keysDown || 65 in keysDown) { // === LEFT
                 if (this.x > 5  && this.intersectsMap(this.x - 10, this.y, this.map) === false) {
-                    this.x -= this.stepOfMovement;
+                    if (32 in keysDown && this.jumpPower > 5) {
+                        this.x -= this.stepOfMovement * 2;
+                        this.jumpPower -= 5;
+                    } else {
+                        this.x -= this.stepOfMovement;
+                    }
                 }
             }
             if (39 in keysDown || 68 in keysDown) { // === RIGHT
                 if (this.x < this.map.width-5 &&  this.intersectsMap(this.x + 10, this.y, this.map) === false) {
-                    this.x += this.stepOfMovement;
+                    if (32 in keysDown && this.jumpPower > 5) {
+                        this.x += this.stepOfMovement * 2;
+                        this.jumpPower -= 5;
+                    } else {
+                        this.x += this.stepOfMovement;
+                    }
                 }
             }
         };
-        // Player.prototype.movePlayer = () => {
-        //     if (38 in keysDown || 87 in keysDown) { // === UP
-        //         if (32 in keysDown && this.y > 0 && this.jumpPower > 5) {
-        //             this.y -= this.stepOfMovement * 3;
-        //             this.jumpPower -= 5;
-        //         } else if (this.y > 0) {
-        //             this.y -= this.stepOfMovement;
-        //         }
-        //     }
-        //     if (40 in keysDown || 83 in keysDown) { // === DOWN
-        //         if (32 in keysDown && this.y < this.map.height && this.jumpPower > 5) {
-        //             this.y += this.stepOfMovement * 3;
-        //             this.jumpPower -= 5;
-        //         } else if (this.y < this.map.height) {
-        //             this.y += this.stepOfMovement;
-        //         }
-        //     }
-        //     if (37 in keysDown || 65 in keysDown) { // === LEFT
-        //         if (32 in keysDown && this.x > 0 && this.jumpPower > 5) {
-        //             this.x -= this.stepOfMovement * 3;
-        //             this.jumpPower -= 5;
-        //         } else if (this.x > 0) {
-        //             this.x -= this.stepOfMovement;
-        //         }
-        //     }
-        //     if (39 in keysDown || 68 in keysDown) { // === RIGHT
-        //         if (32 in keysDown && this.x < this.map.width && this.jumpPower > 5) {
-        //             this.x += this.stepOfMovement * 3;
-        //             this.jumpPower -= 5;
-        //         } else if (this.x < this.map.width) {
-        //             this.x += this.stepOfMovement;
-        //         }
-        //     }
-        // };
-    
+
         Player.prototype.getTheta = (cx, cy, ex, ey) => {
             let dy = ey - cy;
             let dx = ex - cx;
@@ -132,30 +126,54 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.endAngle = this.directionFacing + (this.flashlightAngle / 2);
         };
 
-        Player.prototype.changeFlashlight = () => {
+        Player.prototype.useItems = () => {
             if (49 in keysDown) { // === 1
+                this.currentRadius = 0;
+                this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+                this.batteryDrain = 0
+            } else if (50 in keysDown) { // === 2
                 this.currentRadius = this.radius * 2;
                 this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-            } else if (50 in keysDown) { // === 2
+                this.batteryDrain = .05
+            } else if (51 in keysDown) { // === 3
                 this.currentRadius = this.radius;
                 this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-            } else if (51 in keysDown) { // === 3
+                this.batteryDrain = .01;
+            } else if (52 in keysDown) { // === 4
                 this.flashlightAngle = ((360) * Math.PI / 180);
-                this.currentRadius = this.radius * .7;
+                this.currentRadius = this.radius * 0.7;
+            } else if (53 in keysDown && this.items.includes("battery")) { // === 5
+                this.batteryPower += 50;
+                this.items.splice( this.items.indexOf('battery'), 1 );
+
             }
         };
+
+        Player.prototype.drawStats = () => {
+            let canvas2 = document.getElementById("battery-level");
+            let context2 = canvas2.getContext("2d");	
+            context2.clearRect(0, 0, canvas2.width, canvas2.height);
+            context2.font="20px Arial";
+            context2.fillStyle = "white";
+            // context2.textAlign = "left";
+            context2.fillText(`sprint: ${this.jumpPower}`, 0, 50);
+            context2.fillText(`battery: ${Math.floor(this.batteryPower)}`, 0, 100);
+            context2.fillText(`items: ${this.items}`, 200, 50);
+        }
         
         Player.prototype.update = () => {
             this.movePlayer();
             this.moveFlashlight();
-            this.changeFlashlight();
+            this.useItems();
             this.regenerate();
-            this.createGradient(this.currentRadius);
+            this.createGradient(this.currentRadius, this.color, this.color2);
+
             
         };
         
         Player.prototype.draw = () => {
             this.drawPlayer(this.directionFacing);
+            this.drawStats();
         };
     }
 
