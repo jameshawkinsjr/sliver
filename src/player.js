@@ -7,7 +7,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.items = ['lantern (3)', ' matches'];
+        this.startItems = [' [0] No Flashlight', ' [1] High Beams', ' [2] Normal Flashlight'];
+        this.items = [];
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
@@ -18,18 +19,26 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.batteryDrain = .01;
         
         Player.prototype.drawPlayer = (direction) => {
-            const sprite = document.getElementById('sprite');
+            // const sprite = document.getElementById('sprite');
             this.c.save();
-            this.c.drawImage(sprite, 0, 0, 305, 231, canvasWidth/2-10, canvasHeight/2-10, 30, 23);
             this.c.beginPath(canvasWidth/2, canvasHeight/2);
             this.c.arc(canvasWidth/2, canvasHeight/2, this.currentRadius, this.startAngle, this.endAngle, false);
             this.c.lineTo(canvasWidth/2, canvasHeight/2);
             this.c.fillStyle = this.grad;
             this.c.fill();		
-            this.c.rotate(direction);
+            this.drawSprite();
             this.c.restore();
             this.batteryPower -= this.batteryDrain;
         };
+
+        Player.prototype.drawSprite = () => {
+            const sprite = document.getElementById('sprite');
+            this.c.save();
+            this.c.translate((canvasWidth-10)/2, (canvasHeight-10)/2);
+            this.c.rotate(this.directionFacing);
+            this.c.drawImage(sprite, 0, 0, 305, 231, -34,-12, 30, 23);
+            this.c.restore();
+        }
 
         Player.prototype.regenerate = () => {
             if (this.jumpPower < 100) {
@@ -48,8 +57,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             let yTile = ~~(y/100);
             if (map.map[yTile][xTile] === 1){
                 return true;
-            } else if (map.map[yTile][xTile] === 2){
-                this.items.push("battery");
+            } else if (map.map[yTile][xTile] === 'b'){
+                this.items.push("[5] battery");
                 map.map[yTile][xTile]  = 0;
                 return false;
             } else {
@@ -142,9 +151,9 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             } else if (52 in keysDown) { // === 4
                 this.flashlightAngle = ((360) * Math.PI / 180);
                 this.currentRadius = this.radius * 0.7;
-            } else if (53 in keysDown && this.items.includes("battery")) { // === 5
+            } else if (53 in keysDown && this.items.includes("[5] battery")) { // === 5
                 this.batteryPower += 50;
-                this.items.splice( this.items.indexOf('battery'), 1 );
+                this.items.splice( this.items.indexOf("[5] battery"), 1 );
 
             }
         };
@@ -153,12 +162,13 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             let canvas2 = document.getElementById("battery-level");
             let context2 = canvas2.getContext("2d");	
             context2.clearRect(0, 0, canvas2.width, canvas2.height);
-            context2.font="20px Arial";
+            context2.font="15px Arial";
             context2.fillStyle = "white";
             // context2.textAlign = "left";
             context2.fillText(`sprint: ${this.jumpPower}`, 0, 50);
             context2.fillText(`battery: ${Math.floor(this.batteryPower)}`, 0, 100);
-            context2.fillText(`items: ${this.items}`, 200, 50);
+            context2.fillText(`${this.startItems}`, 200, 50);
+            context2.fillText(`${this.items}`, 200, 100);
         }
         
         Player.prototype.update = () => {
@@ -167,8 +177,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.useItems();
             this.regenerate();
             this.createGradient(this.currentRadius, this.color, this.color2);
-
-            
         };
         
         Player.prototype.draw = () => {

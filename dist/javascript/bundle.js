@@ -100,7 +100,7 @@ var Map = __webpack_require__(/*! ./map */ "./src/map.js");
 function Game(context) {
   var _this = this;
 
-  this.map = [[1, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+  this.map = [[1, 'b', 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0], [0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
   var colorArray = ['#080808', '#060606', '#040404', '#020202', '#000000'];
   var player;
   var gameMap;
@@ -236,6 +236,11 @@ function Map(inputMap) {
           context.fillStyle = "#333838";
           context.fill();
           context.closePath();
+        } else if (_this.map[j][i] === 'b') {
+          var battery = document.getElementById('battery');
+          context.save();
+          context.drawImage(battery, 0, 0, 512, 512, i * 100 + 35, j * 100 + 35, 30, 30);
+          context.restore();
         }
       }
     }
@@ -286,7 +291,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   this.color = color;
   this.color2 = color2;
   this.map = map;
-  this.items = ['lantern (3)', ' matches'];
+  this.startItems = [' [0] No Flashlight', ' [1] High Beams', ' [2] Normal Flashlight'];
+  this.items = [];
   this.flashlightWidth = flashlightWidth;
   this.centerDegree = centerDegree;
   this.degreeOfRotation = 4;
@@ -298,11 +304,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   this.batteryDrain = .01;
 
   Player.prototype.drawPlayer = function (direction) {
-    var sprite = document.getElementById('sprite');
-
+    // const sprite = document.getElementById('sprite');
     _this.c.save();
-
-    _this.c.drawImage(sprite, 0, 0, 305, 231, canvasWidth / 2 - 10, canvasHeight / 2 - 10, 30, 23);
 
     _this.c.beginPath(canvasWidth / 2, canvasHeight / 2);
 
@@ -314,11 +317,25 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
 
     _this.c.fill();
 
-    _this.c.rotate(direction);
+    _this.drawSprite();
 
     _this.c.restore();
 
     _this.batteryPower -= _this.batteryDrain;
+  };
+
+  Player.prototype.drawSprite = function () {
+    var sprite = document.getElementById('sprite');
+
+    _this.c.save();
+
+    _this.c.translate((canvasWidth - 10) / 2, (canvasHeight - 10) / 2);
+
+    _this.c.rotate(_this.directionFacing);
+
+    _this.c.drawImage(sprite, 0, 0, 305, 231, -34, -12, 30, 23);
+
+    _this.c.restore();
   };
 
   Player.prototype.regenerate = function () {
@@ -341,8 +358,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
 
     if (map.map[yTile][xTile] === 1) {
       return true;
-    } else if (map.map[yTile][xTile] === 2) {
-      _this.items.push("battery");
+    } else if (map.map[yTile][xTile] === 'b') {
+      _this.items.push("[5] battery");
 
       map.map[yTile][xTile] = 0;
       return false;
@@ -448,11 +465,11 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
       // === 4
       _this.flashlightAngle = 360 * Math.PI / 180;
       _this.currentRadius = _this.radius * 0.7;
-    } else if (53 in keysDown && _this.items.includes("battery")) {
+    } else if (53 in keysDown && _this.items.includes("[5] battery")) {
       // === 5
       _this.batteryPower += 50;
 
-      _this.items.splice(_this.items.indexOf('battery'), 1);
+      _this.items.splice(_this.items.indexOf("[5] battery"), 1);
     }
   };
 
@@ -460,12 +477,13 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     var canvas2 = document.getElementById("battery-level");
     var context2 = canvas2.getContext("2d");
     context2.clearRect(0, 0, canvas2.width, canvas2.height);
-    context2.font = "20px Arial";
+    context2.font = "15px Arial";
     context2.fillStyle = "white"; // context2.textAlign = "left";
 
     context2.fillText("sprint: ".concat(_this.jumpPower), 0, 50);
     context2.fillText("battery: ".concat(Math.floor(_this.batteryPower)), 0, 100);
-    context2.fillText("items: ".concat(_this.items), 200, 50);
+    context2.fillText("".concat(_this.startItems), 200, 50);
+    context2.fillText("".concat(_this.items), 200, 100);
   };
 
   Player.prototype.update = function () {

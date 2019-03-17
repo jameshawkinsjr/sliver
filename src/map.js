@@ -28,6 +28,11 @@ function Map(inputMap){
                     context.fillStyle = "#333838";
                     context.fill();
                     context.closePath();
+                } else if (this.map[j][i] === 'b') {
+                    const battery = document.getElementById('battery');
+                    context.save();
+                    context.drawImage(battery, 0,0, 512, 512, (i * 100 + 35), (j * 100 + 35), 30, 30)
+                    context.restore();
                 }
             }
         }		
