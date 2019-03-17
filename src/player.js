@@ -7,7 +7,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.startItems = [' [1] No Flashlight', ' [2] High Beams', ' [3] Normal Flashlight'];
+        this.startItems = ['| 1 | No Flashlight ', '| 2 | High Beams', ' | 3 | Normal Flashlight'];
         this.items = [];
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
@@ -16,7 +16,11 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         this.batteryPower = 200;
-        this.batteryDrain = .01;
+        this.batteryDrain = 0.01;
+        
+        let keysDown = {};
+        addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
+        addEventListener( "keyup",    (e) => { delete keysDown[e.keyCode]; } );
         
         Player.prototype.drawPlayer = (direction) => {
             // const sprite = document.getElementById('sprite');
@@ -64,7 +68,11 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             if (map.map[yTile][xTile] === 1){
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
-                this.items.push("[5] battery");
+                this.items.push("| 5 | Battery");
+                map.map[yTile][xTile]  = 0;
+                return false;
+            } else if (map.map[yTile][xTile] === 'l'){
+                this.items.push("| 4 | Lantern");
                 map.map[yTile][xTile]  = 0;
                 return false;
             } else {
@@ -155,14 +163,14 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                     this.currentRadius = this.radius;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
                     this.batteryDrain = .01;
-                } else if (52 in keysDown) { // === 4
+                } else if (52 in keysDown && this.items.includes("| 4 | Lantern") ) { // === 4
                     this.currentRadius = this.radius * 0.7;
                     this.flashlightAngle = ((360) * Math.PI / 180);
                 }
             }
-            if (53 in keysDown && this.items.includes("[5] battery")) { // === 5
+            if (53 in keysDown && this.items.includes("| 5 | Battery")) { // === 5
                 this.batteryPower += 50;
-                this.items.splice( this.items.indexOf("[5] battery"), 1 );
+                this.items.splice( this.items.indexOf("| 5 | Battery"), 1 );
 
             }
         };
@@ -174,10 +182,11 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             context2.font="15px Arial";
             context2.fillStyle = "white";
             // context2.textAlign = "left";
-            context2.fillText(`sprint: ${this.jumpPower}`, 0, 50);
-            context2.fillText(`battery: ${Math.floor(this.batteryPower)}`, 0, 100);
-            context2.fillText(`${this.startItems}`, 200, 50);
-            context2.fillText(`${this.items}`, 200, 100);
+            context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
+            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 100);
+            context2.fillText(`KEY | ITEM`, 200, 50);
+            context2.fillText(`${this.startItems}`, 200, 100);
+            context2.fillText(`${this.items}`, 200, 150);
         }
         
         Player.prototype.update = () => {

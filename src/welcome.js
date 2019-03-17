@@ -1,14 +1,7 @@
-var Sprite = require('./sprite');
+function Welcome() {
 
-function Map(inputMap, color){
-        this.map = inputMap;
-        this.rowWidth = 100;
-        this.rowHeight = 100;
-        this.width = inputMap[0].length * this.rowWidth;
-        this.height = inputMap.length * this.rowHeight;
-        this.color = color;
-    
-    Map.prototype.generate = () => {
+    generate() {
+
         let context = document.createElement("canvas").getContext("2d");		
         context.canvas.width = this.width;
         context.canvas.height = this.height;
@@ -37,11 +30,6 @@ function Map(inputMap, color){
                 }
             }
         }		
-        context.restore();	
-        this.image = new Image();
-        this.image.src = context.canvas.toDataURL("image/png");
-        context = null;
     }
-};
-
-module.exports = Map;
+}
+module.exports = Welcome;

@@ -5,6 +5,17 @@ let maps = require('./maps');
 
 function Game(context){
 
+    let requestAnimFrame = ( () => { 
+        return  window.requestAnimationFrame       ||  
+                window.webkitRequestAnimationFrame ||  
+                window.mozRequestAnimationFrame    ||  
+                window.oRequestAnimationFrame      ||  
+                window.msRequestAnimationFrame     ||  
+                function( callback ){ 
+                  window.setTimeout(callback, 1000 / 60); 
+                }; 
+      })(); 
+
 
     let colorArray = [
         '#080808',
