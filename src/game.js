@@ -5,7 +5,6 @@ let maps = require('./maps');
 
 function Game(context){
     this.level = 0;
-    this.timeout = 50;
 
     let requestAnimFrame = ( () => { 
         return  window.requestAnimationFrame       ||  
@@ -19,12 +18,8 @@ function Game(context){
       })(); 
 
     let colorArray = [
-        // '#090909',
-        // '#080808',
         '#060606',
-        // '#040404',
         '#020202',
-        // '#000000',
         '#000000',
         '#000000',
         '#000000',
@@ -45,7 +40,7 @@ function Game(context){
     Game.prototype.init = (level) => {
         gameMap = new Map(mapArray[this.level], colorArray[this.level]);
         gameMap.generate();
-        player = new Player(context, 0, 60, 150, '#797939', 'black', gameMap, this.level);
+        player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, this.level);
     };
 
     Game.prototype.update = () => {
@@ -65,10 +60,27 @@ function Game(context){
     }
     Game.prototype.welcome = () => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="30px Arima Madurai";
+        context.fillStyle = "#b7b7b7";
+        context.fillText(`this is sliver.`, 0, 200);
+        context.fillText(`find the key.`, 0, 250);
+        context.fillText(`find the way out.`, 0, 300);
+    }
+
+    Game.prototype.batteries = () => {
+        context.fillText(`don't run out of batteries.`, 0, 350)
+    }
+    Game.prototype.controls = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.font="45px Arima Madurai";
-        context.fillStyle = "white";
-        context.fillText(`Welcome to sliver!`, 200, canvasHeight/2);
-        context.fillText(`Your objective: Find a way out.!`, 200, canvasHeight/2 + 100);
+        context.fillStyle = "#b7b7b7";
+        context.fillText(`controls`, canvasWidth/2-80, 100);
+        context.font="30px Arima Madurai";
+        context.fillText(`up (w)`, canvasWidth/2-45, 200);
+        context.fillText(`left (a) / down (s) / right (d)`, canvasWidth/2-180, 250);
+        context.fillText(`look around (mouse)`, canvasWidth/2-130, 350);
+        context.fillText(`sprint (space)`, canvasWidth/2-80, 400);
+        context.fillText(`items (numbers 1-9)`, canvasWidth/2-130, 500);
     }
     
     Game.prototype.animate = () => {
@@ -78,7 +90,6 @@ function Game(context){
         if (player.exit === true && this.level < 6) {
             this.level += 1;
             this.init(this.level);
-            console.log("next level");
         }
         if (this.level === 6){
             this.winner();
@@ -87,8 +98,10 @@ function Game(context){
 
     Game.prototype.play = () => {
         this.welcome();
-        setTimeout(this.init, 10000);
-        setTimeout(this.animate, 11000);
+        setTimeout(this.batteries, 3000);
+        setTimeout(this.controls, 7000);
+        setTimeout(this.init, 12000);
+        setTimeout(this.animate, 13000);
         
     };
 }
