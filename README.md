@@ -4,6 +4,8 @@
     </a>
 </p>
 
+[Play a live version here](https://jameshawkinsjr.github.io/sliver/dist/)
+
 _sliver_ is a top-down game about searching for a key in darkness with limited sources of light.
     
 ## Background and Overview
