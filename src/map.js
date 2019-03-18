@@ -13,7 +13,7 @@ function Map(inputMap, color){
         context.canvas.width = this.width;
         context.canvas.height = this.height;
         
-        let color = '#000000';
+        let color = this.color;
         context.save();
         for (let x = 0, i = 0; i < this.map[0].length; x+=this.rowWidth, i++) {
             for (let y = 0, j=0; j < this.map.length; y+=this.rowHeight, j++) {            
@@ -32,7 +32,22 @@ function Map(inputMap, color){
                 } else if (this.map[j][i] === 'b') {
                     const battery = document.getElementById('battery');
                     context.save();
-                    context.drawImage(battery, 0,0, 512, 512, (i * 100 + 35), (j * 100 + 35), 30, 30)
+                    context.drawImage(battery, 0, 0, 30, 30, (i * 100 + 35), (j * 100 + 35), 30, 30);
+                    context.restore();
+                } else if (this.map[j][i] === 'l') {
+                    const lantern = document.getElementById('lantern');
+                    context.save();
+                    context.drawImage(lantern, 0, 0, 46, 43, (i * 100 + 35), (j * 100 + 30), 46, 43);
+                    context.restore();
+                } else if (this.map[j][i] === 'k') {
+                    const key = document.getElementById('key');
+                    context.save();
+                    context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 40, 48);
+                    context.restore();
+                } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
+                    const portal = document.getElementById('portal');
+                    context.save();
+                    context.drawImage(portal, 0, 0, 50, 50, (i * 100 + 35), (j * 100 + 30), 50, 50);
                     context.restore();
                 }
             }

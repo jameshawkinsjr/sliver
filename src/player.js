@@ -1,4 +1,4 @@
-function Player(context, centerDegree, flashlightWidth, radius, color, color2, map) {
+function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level) {
         this.c = context;
         this.x = canvasWidth/2;
         this.y = canvasHeight/2;
@@ -7,12 +7,15 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.startItems = ['| 1 | No Flashlight ', '| 2 | High Beams', ' | 3 | Normal Flashlight'];
+        this.startItems = [' 1. Off', ' 2. Hi-Beam', ' 3. Flashlight'];
         this.items = [];
+        this.keys = [];
+        this.exit = false;
+        this.level = level;
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
         this.degreeOfRotation = 4;
-        this.stepOfMovement = 4; // 1.7;
+        this.stepOfMovement = 3; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
         this.jumpPower = 100;
         this.batteryPower = 200;
@@ -68,11 +71,19 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             if (map.map[yTile][xTile] === 1){
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
-                this.items.push("| 5 | Battery");
+                this.items.push("5. Battery");
                 map.map[yTile][xTile]  = 0;
                 return false;
             } else if (map.map[yTile][xTile] === 'l'){
-                this.items.push("| 4 | Lantern");
+                this.items.push("4. Lantern");
+                map.map[yTile][xTile]  = 0;
+                return false;
+            } else if (map.map[yTile][xTile] === 'k'){
+                this.keys[0] = "Key: True";
+                map.map[yTile][xTile]  = 0;
+                return false;
+            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key: True"){
+                this.exit = true;
                 map.map[yTile][xTile]  = 0;
                 return false;
             } else {
@@ -158,19 +169,19 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 } else if (50 in keysDown) { // === 2
                     this.currentRadius = this.radius * 2;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                    this.batteryDrain = .05
+                    this.batteryDrain = 0.05
                 } else if (51 in keysDown) { // === 3
                     this.currentRadius = this.radius;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                    this.batteryDrain = .01;
-                } else if (52 in keysDown && this.items.includes("| 4 | Lantern") ) { // === 4
+                    this.batteryDrain = 0.01;
+                } else if (52 in keysDown && this.items.includes("4. Lantern") ) { // === 4
                     this.currentRadius = this.radius * 0.7;
                     this.flashlightAngle = ((360) * Math.PI / 180);
                 }
             }
-            if (53 in keysDown && this.items.includes("| 5 | Battery")) { // === 5
+            if (53 in keysDown && this.items.includes("5. Battery")) { // === 5
                 this.batteryPower += 50;
-                this.items.splice( this.items.indexOf("| 5 | Battery"), 1 );
+                this.items.splice( this.items.indexOf("5. Battery"), 1 );
 
             }
         };
@@ -182,11 +193,17 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             context2.font="15px Arial";
             context2.fillStyle = "white";
             // context2.textAlign = "left";
+            context2.fillText(`Level: ${this.level + 1}`, 0, 25);
             context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
-            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 100);
-            context2.fillText(`KEY | ITEM`, 200, 50);
-            context2.fillText(`${this.startItems}`, 200, 100);
-            context2.fillText(`${this.items}`, 200, 150);
+            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 75);
+            context2.fillText( `${this.keys[0] || ""}`, 0, 100);
+            context2.fillText(`Items`, 150, 25);
+            context2.fillText(`${this.startItems[0]}`, 150, 50);
+            context2.fillText(`${this.startItems[1]}`, 150, 75);
+            context2.fillText(`${this.startItems[2]}`, 150, 100);
+            context2.fillText(`${this.items[0] || ""}`, 275, 50);
+            context2.fillText(`${this.items[1] || ""}`, 275, 75);
+            context2.fillText(`${this.items[2] || ""}`, 275, 100);
         }
         
         Player.prototype.update = () => {

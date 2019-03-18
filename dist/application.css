@@ -1,12 +1,12 @@
 html {
     /* cursor: url('https://github.com/jameshawkinsjr/sliver/blob/master/src/images/flashlight.png') 0 0, grab; */
-    cursor: url('../src//images/flashlight.png') 0 0, grab;
+    cursor: url('../src/images/flashlight.png') 0 0, grab;
     
 }
 
 body {
-    /* background: black; */
-    background: #292929;     
+    background: black;
+    /* background: #292929;      */
     font-family: 'Quicksand', sans-serif;
 }
 header{

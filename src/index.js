@@ -23,8 +23,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     
     // Play game
     let game = new Game(context);
-    game.init();
-    game.animate();
+    game.play();
     
 
 });
