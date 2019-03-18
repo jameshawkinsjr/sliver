@@ -7,7 +7,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.startItems = [' 1. Off', ' 2. Hi-Beam', ' 3. Flashlight'];
+        this.startItems = [' 1. Off', ' 2. Hi-Beam', ' 3. Normal'];
         this.items = [];
         this.keys = [];
         this.exit = false;
@@ -79,10 +79,10 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 map.map[yTile][xTile]  = 0;
                 return false;
             } else if (map.map[yTile][xTile] === 'k'){
-                this.keys[0] = "Key: True";
+                this.keys[0] = "Key";
                 map.map[yTile][xTile]  = 0;
                 return false;
-            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key: True"){
+            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key"){
                 this.exit = true;
                 map.map[yTile][xTile]  = 0;
                 return false;
@@ -169,7 +169,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 } else if (50 in keysDown) { // === 2
                     this.currentRadius = this.radius * 2;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                    this.batteryDrain = 0.05
+                    this.batteryDrain = 0.05;
                 } else if (51 in keysDown) { // === 3
                     this.currentRadius = this.radius;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
@@ -190,20 +190,39 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             let canvas2 = document.getElementById("battery-level");
             let context2 = canvas2.getContext("2d");	
             context2.clearRect(0, 0, canvas2.width, canvas2.height);
-            context2.font="15px Arial";
+            context2.font="15px Arima Madurai";
             context2.fillStyle = "white";
             // context2.textAlign = "left";
             context2.fillText(`Level: ${this.level + 1}`, 0, 25);
             context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
-            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 75);
-            context2.fillText( `${this.keys[0] || ""}`, 0, 100);
-            context2.fillText(`Items`, 150, 25);
+            if (this.keys[0] === 'Key'){
+                context2.fillStyle = "#F8Cf5F";
+            }
+            context2.fillText( `${this.keys[0] || "Key: Missing"}`, 0, 100);
+            context2.fillStyle = "white";
+            context2.fillText(`Flashlight`, 150, 25);
             context2.fillText(`${this.startItems[0]}`, 150, 50);
             context2.fillText(`${this.startItems[1]}`, 150, 75);
             context2.fillText(`${this.startItems[2]}`, 150, 100);
+            context2.fillText(`Items`, 275, 25);
             context2.fillText(`${this.items[0] || ""}`, 275, 50);
             context2.fillText(`${this.items[1] || ""}`, 275, 75);
             context2.fillText(`${this.items[2] || ""}`, 275, 100);
+            context2.fillText(`Objective`, 375, 25);
+            context2.fillText(`Objective`, 375, 25);
+            if (this.keys[0] === 'Key'){
+                context2.fillText(`Find the Exit`, 375, 50); 
+            } else {
+                context2.fillText(`Find the Key`, 375, 50); 
+            }
+            if (this.batteryPower < 50){
+                context2.fillStyle = "#C53426";
+            } else if (this.batteryPower < 100){
+                context2.fillStyle = "#F8Cf5F";
+            } else if (this.batteryPower > 150) {
+                context2.fillStyle = "#63d26e";
+            }
+            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 75);
         }
         
         Player.prototype.update = () => {

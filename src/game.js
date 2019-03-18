@@ -5,6 +5,7 @@ let maps = require('./maps');
 
 function Game(context){
     this.level = 0;
+    this.timeout = 50;
 
     let requestAnimFrame = ( () => { 
         return  window.requestAnimationFrame       ||  
@@ -42,9 +43,9 @@ function Game(context){
     let player;
     let gameMap;
     Game.prototype.init = (level) => {
-        gameMap = new Map(mapArray[level], colorArray[level]);
+        gameMap = new Map(mapArray[this.level], colorArray[this.level]);
         gameMap.generate();
-        player = new Player(context, 0, 60, 150, '#797939', 'black', gameMap, level);
+        player = new Player(context, 0, 60, 150, '#797939', 'black', gameMap, this.level);
     };
 
     Game.prototype.update = () => {
@@ -55,6 +56,19 @@ function Game(context){
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         player.draw();
         context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);        
+    }
+    Game.prototype.winner = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="45px Arima Madurai";
+        context.fillStyle = "white";
+        context.fillText(`You won!`, 200, canvasHeight/2 + 50);
+    }
+    Game.prototype.welcome = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="45px Arima Madurai";
+        context.fillStyle = "white";
+        context.fillText(`Welcome to sliver!`, 200, canvasHeight/2);
+        context.fillText(`Your objective: Find a way out.!`, 200, canvasHeight/2 + 100);
     }
     
     Game.prototype.animate = () => {
@@ -67,13 +81,15 @@ function Game(context){
             console.log("next level");
         }
         if (this.level === 6){
-            console.log("You win");
+            this.winner();
         }
     };  
 
     Game.prototype.play = () => {
-        this.init(0);
-        this.animate();
-        };
+        this.welcome();
+        setTimeout(this.init, 10000);
+        setTimeout(this.animate, 11000);
+        
+    };
 }
 module.exports = Game;
