@@ -121,16 +121,29 @@ function Game(context) {
     gameMap = new Map(mapArray[_this.level], colorArray[_this.level]);
     gameMap.generate();
     player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, _this.level);
+    zombie = new Zombie(context, gameMap, player);
   };
 
   Game.prototype.update = function () {
     player.update();
+    zombie.update();
   };
 
   Game.prototype.draw = function () {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     player.draw();
+    zombie.draw();
     context.drawImage(gameMap.image, player.x - canvasWidth / 2, player.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
+    context.save();
+    var gradient = context.createRadialGradient(canvasWidth / 2, canvasHeight / 2, player.currentRadius / 5, canvasWidth / 2, canvasHeight / 2, player.currentRadius);
+    gradient.addColorStop(0, "transparent");
+    gradient.addColorStop(1, "#000");
+    context.beginPath(canvasWidth / 2, canvasHeight / 2);
+    context.arc(canvasWidth / 2, canvasHeight / 2, 360, 90, 180, false);
+    context.lineTo(canvasWidth / 2, canvasHeight / 2);
+    context.fillStyle = gradient;
+    context.fill();
+    context.restore();
   };
 
   Game.prototype.winner = function () {
@@ -185,12 +198,14 @@ function Game(context) {
   };
 
   Game.prototype.play = function () {
-    _this.welcome();
+    // this.welcome();
+    // setTimeout(this.batteries, 3000);
+    // setTimeout(this.controls, 7000);
+    // setTimeout(this.init, 12000);
+    // setTimeout(this.animate, 13000);
+    _this.init();
 
-    setTimeout(_this.batteries, 3000);
-    setTimeout(_this.controls, 7000);
-    setTimeout(_this.init, 12000);
-    setTimeout(_this.animate, 13000);
+    _this.animate();
   };
 }
 
@@ -233,8 +248,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     mouse.y = pos.y;
   }); // Play game
 
-  var game = new Game(context);
-  setTimeout(game.play, 8000);
+  var game = new Game(context); // setTimeout(game.play, 8000);
+
+  game.play();
 });
 
 /***/ }),
@@ -377,8 +393,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     delete keysDown[e.keyCode];
   });
 
-  Player.prototype.drawPlayer = function (direction) {
-    // const sprite = document.getElementById('sprite');
+  Player.prototype.drawPlayer = function () {
     _this.c.save();
 
     _this.c.beginPath(canvasWidth / 2, canvasHeight / 2);
@@ -720,22 +735,30 @@ module.exports = Sprite;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function Zombie(context, map) {
+function Zombie(context, map, player) {
   var _this = this;
 
   this.c = context;
-  this.x = canvasWidth - 40;
-  this.y = canvasHeight - 40;
+  this.x = 450;
+  this.y = 450; // this.x = this.x - context.canvas.width/2;
+  // this.posY = this.y - context.canvas.height/2;
+
   this.map = map;
   this.stepOfMovement = 4; // 1.7;
+
+  this.timeSinceUpdate = 0;
+  this.random = 3;
 
   Zombie.prototype.drawZombie = function (direction) {
     var zombie = document.getElementById('zombie');
 
-    _this.c.save(); // this.c.rotate(this.directionFacing);
+    _this.c.save();
 
+    _this.c.translate(_this.x + 300 - player.x, _this.y + 300 - player.y);
 
-    _this.c.drawImage(zombie, 0, 0, 305, 231, 0, 0, 30, 23);
+    _this.c.rotate(_this.directionFacing);
+
+    _this.c.drawImage(zombie, 0, 0, 305, 231, -15, -12, 30, 23);
 
     _this.c.restore();
   };
@@ -751,48 +774,65 @@ function Zombie(context, map) {
     }
   };
 
-  Zombie.prototype.moveZombie = function () {
-    switch (Math.floor(Math.random()) * 4) {
+  Zombie.prototype.moveZombie = function (input) {
+    switch (input) {
       case 0:
-        if (_this.y > 5 && _this.intersectsMap(_this.x, _this.y - 10, _this.map) === false) {
+        if (_this.y > 5 && _this.intersectsMap(_this.x, _this.y - 15, _this.map) === false) {
           _this.y -= _this.stepOfMovement; // UP
+
+          _this.directionFacing = (0 % 360 - 90) * Math.PI / 180;
+        } else {
+          _this.timeSinceUpdate = 100;
         }
 
         break;
 
       case 1:
-        if (_this.y < _this.map.height - 5 && _this.intersectsMap(_this.x, _this.y + 10, _this.map) === false) {
+        if (_this.y < _this.map.height - 5 && _this.intersectsMap(_this.x, _this.y + 15, _this.map) === false) {
           _this.y += _this.stepOfMovement; // DOWN
+
+          _this.directionFacing = (180 % 360 - 90) * Math.PI / 180;
+        } else {
+          _this.timeSinceUpdate = 100;
         }
 
         break;
 
       case 2:
-        if (_this.x > 5 && _this.intersectsMap(_this.x - 10, _this.y, _this.map) === false) {
+        if (_this.x > 5 && _this.intersectsMap(_this.x - 15, _this.y, _this.map) === false) {
           _this.x -= _this.stepOfMovement; // LEFT
+
+          _this.directionFacing = (270 % 360 - 90) * Math.PI / 180;
+        } else {
+          _this.timeSinceUpdate = 100;
         }
 
         break;
 
       case 3:
-        if (_this.x < _this.map.width - 5 && _this.intersectsMap(_this.x + 10, _this.y, _this.map) === false) {
+        if (_this.x < _this.map.width - 5 && _this.intersectsMap(_this.x + 15, _this.y, _this.map) === false) {
           _this.x += _this.stepOfMovement; // RIGHT
+
+          _this.directionFacing = (90 % 360 - 90) * Math.PI / 180;
+        } else {
+          _this.timeSinceUpdate = 100;
         }
 
-        ;
         break;
     }
   };
 
-  Zombie.prototype.moveFlashlight = function () {
-    var delta = (_this.centerDegree - theta) % 360;
-    _this.directionFacing = (_this.centerDegree % 360 - 90) * Math.PI / 180;
-  };
-
   Zombie.prototype.update = function () {
-    _this.moveZombie();
+    if (_this.timeSinceUpdate > 40) {
+      _this.random = Math.floor(Math.random() * 4);
+      _this.timeSinceUpdate = 0;
+    } else {
+      _this.timeSinceUpdate += 1;
+    }
 
-    console.log(_this.x, _this.y);
+    console.log(_this.timeSinceUpdate, _this.random);
+
+    _this.moveZombie(_this.random);
   };
 
   Zombie.prototype.draw = function () {

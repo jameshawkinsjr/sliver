@@ -25,8 +25,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
         addEventListener( "keyup",    (e) => { delete keysDown[e.keyCode]; } );
         
-        Player.prototype.drawPlayer = (direction) => {
-            // const sprite = document.getElementById('sprite');
+        Player.prototype.drawPlayer = () => {
             this.c.save();
             this.c.beginPath(canvasWidth/2, canvasHeight/2);
             this.c.arc(canvasWidth/2, canvasHeight/2, this.currentRadius, this.startAngle, this.endAngle, false);
