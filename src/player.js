@@ -17,6 +17,9 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.degreeOfRotation = 4;
         this.stepOfMovement = 3; // 1.7;
         this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+        this.directionFacing = (((this.centerDegree % 360) - 90) * Math.PI / 180);
+        this.startAngle = this.directionFacing - (this.flashlightAngle / 2);
+        this.endAngle = this.directionFacing + (this.flashlightAngle / 2);
         this.jumpPower = 100;
         this.batteryPower = 200;
         this.batteryDrain = 0.01;
@@ -32,7 +35,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.c.lineTo(canvasWidth/2, canvasHeight/2);
             this.c.fillStyle = this.grad;
             this.c.fill();		
-            this.drawSprite();
             this.c.restore();
             if (this.batteryPower > 0){
                 this.batteryPower -= this.batteryDrain;
@@ -72,22 +74,17 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             } else if (map.map[yTile][xTile] === 'b'){
                 this.items.push("5. Battery");
                 map.map[yTile][xTile]  = 0;
-                return false;
             } else if (map.map[yTile][xTile] === 'l'){
                 this.items.push("4. Lantern");
                 map.map[yTile][xTile]  = 0;
-                return false;
             } else if (map.map[yTile][xTile] === 'k'){
                 this.keys[0] = "Key";
                 map.map[yTile][xTile]  = 0;
-                return false;
             } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key"){
                 this.exit = true;
                 map.map[yTile][xTile]  = 0;
-                return false;
-            } else {
-                return false;
             }
+            return false;
         }
             
         Player.prototype.movePlayer = () => {
@@ -163,8 +160,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             if (this.batteryPower > 0) {
                 if (49 in keysDown) { // === 1
                     this.currentRadius = 0;
-                    this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
-                    this.batteryDrain = 0
+                    // this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
+                    this.batteryDrain = 0;
                 } else if (50 in keysDown) { // === 2
                     this.currentRadius = this.radius * 2;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
@@ -176,6 +173,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 } else if (52 in keysDown && this.items.includes("4. Lantern") ) { // === 4
                     this.currentRadius = this.radius * 0.7;
                     this.flashlightAngle = ((360) * Math.PI / 180);
+                    this.startAngle = 0;
+                    this.endAngle = 0;
                 }
             }
             if (53 in keysDown && this.items.includes("5. Battery")) { // === 5

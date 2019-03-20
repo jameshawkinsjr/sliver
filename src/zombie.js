@@ -1,14 +1,12 @@
-function Zombie(context, map, player) {
+function Zombie(context, map, player, startX, startY) {
     this.c = context;
-    this.x = 450;
-    this.y = 450;
-    // this.x = this.x - context.canvas.width/2;
-    // this.posY = this.y - context.canvas.height/2;
+    this.x = startX;
+    this.y = startY;
     this.map = map;
     this.stepOfMovement = 4; // 1.7;
     this.timeSinceUpdate = 0;
     this.random = 3;
-    
+
     Zombie.prototype.drawZombie = (direction) => {
         const zombie = document.getElementById('zombie');
         this.c.save();
@@ -72,7 +70,6 @@ function Zombie(context, map, player) {
         } else {
             this.timeSinceUpdate += 1;
         }
-        console.log(this.timeSinceUpdate, this.random);
         this.moveZombie(this.random);
     };
     

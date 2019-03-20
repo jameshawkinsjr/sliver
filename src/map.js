@@ -7,6 +7,7 @@ function Map(inputMap, color){
         this.width = inputMap[0].length * this.rowWidth;
         this.height = inputMap.length * this.rowHeight;
         this.color = color;
+        this.blankSpots = [];
     
     Map.prototype.generate = () => {
         let context = document.createElement("canvas").getContext("2d");		
@@ -30,25 +31,27 @@ function Map(inputMap, color){
                     context.fill();
                     context.closePath();
                 } else if (this.map[j][i] === 'b') {
-                    const battery = document.getElementById('battery');
+                    let battery = document.getElementById('battery');
                     context.save();
                     context.drawImage(battery, 0, 0, 30, 30, (i * 100 + 35), (j * 100 + 35), 30, 30);
                     context.restore();
                 } else if (this.map[j][i] === 'l') {
-                    const lantern = document.getElementById('lantern');
+                    let lantern = document.getElementById('lantern');
                     context.save();
                     context.drawImage(lantern, 0, 0, 46, 43, (i * 100 + 35), (j * 100 + 30), 46, 43);
                     context.restore();
                 } else if (this.map[j][i] === 'k') {
-                    const key = document.getElementById('key');
+                    let key = document.getElementById('key');
                     context.save();
                     context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 40, 48);
                     context.restore();
                 } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
-                    const portal = document.getElementById('portal');
+                    let portal = document.getElementById('portal');
                     context.save();
                     context.drawImage(portal, 0, 0, 50, 50, (i * 100 + 35), (j * 100 + 30), 50, 50);
                     context.restore();
+                } else {
+                    this.blankSpots.push([x,y]);
                 }
             }
         }		
@@ -56,7 +59,8 @@ function Map(inputMap, color){
         this.image = new Image();
         this.image.src = context.canvas.toDataURL("image/png");
         context = null;
-    }
+    };
+    
 };
 
 module.exports = Map;

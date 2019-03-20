@@ -18,8 +18,10 @@ function Game(context){
       })(); 
 
     let colorArray = [
-        '#060606',
-        '#020202',
+        // '#060606',
+        // '#020202',
+        '#000000',
+        '#000000',
         '#000000',
         '#000000',
         '#000000',
@@ -37,35 +39,71 @@ function Game(context){
 
     let player;
     let gameMap;
+    let randomSpot;
     Game.prototype.init = (level) => {
         gameMap = new Map(mapArray[this.level], colorArray[this.level]);
         gameMap.generate();
         player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, this.level);
-        zombie = new Zombie(context, gameMap, player);
+        zombie1 = new Zombie(context, gameMap, player, 500, 500);
+        // zombie1 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
+        // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
+        // console.log(zombie1)
+        // console.log(zombie2)
     };
+
+    Game.prototype.randomSpot = () => {
+        return gameMap.blankSpots[Math.floor(Math.random() * gameMap.blankSpots.length)];
+    }
 
     Game.prototype.update = () => {
         player.update();
-        zombie.update();
+        zombie1.update();
+        // zombie2.update();
+        // zombie3.update();
+        // zombie4.update();
+        // zombie5.update();
+        // let playerX = player.x;
+        // let playerY = player.y;
+        // let zombieX = ((zombie1.x + 300) - playerX);
+        // let zombieY = ((zombie1.y + 300) - playerY);
+        // if (
+        //     Math.floor(playerX/100) === Math.floor(zombieX/100) 
+        //     &&
+        //     Math.floor(playerY/100) === Math.floor(zombieY/100)
+        //      ){
+        //     console.log("You lose");
+        // }
     };
 
     Game.prototype.draw = () => {
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.clearRect(0, 0, canvasWidth, canvasHeight);  
         player.draw();
-        zombie.draw();
-        context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);        
+        zombie1.draw();
+        // zombie2.draw();
+        // zombie3.draw();
+        // zombie4.draw();
+        // zombie5.draw();
+        context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);   
         context.save();
-        let gradient = context.createRadialGradient(
-            canvasWidth/2, canvasHeight/2, player.currentRadius/5, 
-            canvasWidth/2, canvasHeight/2, player.currentRadius);
-        gradient.addColorStop(0, "transparent");
-        gradient.addColorStop(1, "#000");
-        context.beginPath(canvasWidth/2, canvasHeight/2);
-        context.arc(canvasWidth/2, canvasHeight/2, 360, 90, 180, false);
-        context.lineTo(canvasWidth/2, canvasHeight/2);
-        context.fillStyle = gradient;
-        context.fill();	
+            let gradient = context.createRadialGradient(
+                canvasWidth/2, canvasHeight/2, player.currentRadius/5, 
+                canvasWidth/2, canvasHeight/2, player.currentRadius);
+            gradient.addColorStop(0, "transparent");
+            gradient.addColorStop(1, "#000");
+            context.beginPath(canvasWidth/2, canvasHeight/2);
+            context.arc(canvasWidth/2, canvasHeight/2, canvasHeight, player.startAngle, player.endAngle, false);
+            context.lineTo(canvasWidth/2, canvasHeight/2);
+            context.fillStyle = gradient;
+            context.fill();	
         context.restore();
+        context.save();
+            context.beginPath(canvasWidth/2, canvasHeight/2);
+            context.arc(canvasWidth/2, canvasHeight/2, canvasHeight, player.endAngle, player.startAngle, false);
+            context.lineTo(canvasWidth/2, canvasHeight/2);
+            context.fillStyle = "#000";
+            context.fill();	
+        context.restore();
+        player.drawSprite();
         
     }
     Game.prototype.winner = () => {
