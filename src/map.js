@@ -31,22 +31,26 @@ function Map(inputMap, color){
                     context.fill();
                     context.closePath();
                 } else if (this.map[j][i] === 'b') {
-                    let battery = document.getElementById('battery');
+                    let battery = new Image();
+                    battery.src = '../../src/images/battery.png';
                     context.save();
                     context.drawImage(battery, 0, 0, 30, 30, (i * 100 + 35), (j * 100 + 35), 30, 30);
                     context.restore();
                 } else if (this.map[j][i] === 'l') {
-                    let lantern = document.getElementById('lantern');
+                    let lantern = new Image();
+                    lantern.src = '../../src/images/lantern.png';
                     context.save();
                     context.drawImage(lantern, 0, 0, 46, 43, (i * 100 + 35), (j * 100 + 30), 46, 43);
                     context.restore();
                 } else if (this.map[j][i] === 'k') {
-                    let key = document.getElementById('key');
+                    let key = new Image();
+                    key.src = '../../src/images/key.png';
                     context.save();
                     context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 40, 48);
                     context.restore();
                 } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
-                    let portal = document.getElementById('portal');
+                    let portal = new Image();
+                    portal.src = '../../src/images/portal.png';
                     context.save();
                     context.drawImage(portal, 0, 0, 50, 50, (i * 100 + 35), (j * 100 + 30), 50, 50);
                     context.restore();

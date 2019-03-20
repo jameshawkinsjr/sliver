@@ -117,16 +117,16 @@ main {
 
 #game-canvas {
     /* border: 1px solid red; */
-    /* -webkit-animation: unfoldIn 10s 1; */
+    /* -webkit-animation: unfoldIn 9s 1; */
 }
 
 @keyframes unfoldIn {
     0% {
-        border: 1px solid white;
-        transform:scaleY(.001) scaleX(0);
+        border: 5px solid white;
+        transform:scaleY(.005) scaleX(0);
     }
     30% {
-        transform:scaleY(.001) scaleX(1);
+        transform:scaleY(.005) scaleX(1);
     }
     40% {
         border: 1px solid white;

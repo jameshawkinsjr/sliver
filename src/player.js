@@ -46,7 +46,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         };
 
         Player.prototype.drawSprite = () => {
-            const sprite = document.getElementById('sprite');
+            let sprite = new Image();
+            sprite.src = '../../src/images/player.png';
             this.c.save();
             this.c.translate((canvasWidth+3)/2, (canvasHeight-6)/2);
             this.c.rotate(this.directionFacing);
@@ -173,8 +174,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 } else if (52 in keysDown && this.items.includes("4. Lantern") ) { // === 4
                     this.currentRadius = this.radius * 0.7;
                     this.flashlightAngle = ((360) * Math.PI / 180);
-                    this.startAngle = 0;
-                    this.endAngle = 0;
                 }
             }
             if (53 in keysDown && this.items.includes("5. Battery")) { // === 5

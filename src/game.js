@@ -39,13 +39,14 @@ function Game(context){
 
     let player;
     let gameMap;
-    let randomSpot;
     Game.prototype.init = (level) => {
+        zombieSound = new sound('../../src/images/zombie.m4a');
+        dungeonSound = new sound('../../src/images/dripping.mp3');
+        // dungeonSound.play();
         gameMap = new Map(mapArray[this.level], colorArray[this.level]);
         gameMap.generate();
         player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, this.level);
-        zombie1 = new Zombie(context, gameMap, player, 500, 500);
-        // zombie1 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
+        zombie1 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
         // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
         // console.log(zombie1)
         // console.log(zombie2)
@@ -62,17 +63,16 @@ function Game(context){
         // zombie3.update();
         // zombie4.update();
         // zombie5.update();
-        // let playerX = player.x;
-        // let playerY = player.y;
-        // let zombieX = ((zombie1.x + 300) - playerX);
-        // let zombieY = ((zombie1.y + 300) - playerY);
-        // if (
-        //     Math.floor(playerX/100) === Math.floor(zombieX/100) 
-        //     &&
-        //     Math.floor(playerY/100) === Math.floor(zombieY/100)
-        //      ){
-        //     console.log("You lose");
-        // }
+        let playerX = player.x;
+        let playerY = player.y;
+        let zombieX = ((zombie1.x + 300) - playerX);
+        let zombieY = ((zombie1.y + 300) - playerY);
+        console.log([Math.abs(playerX -zombieX), Math.abs(playerY -zombieY)]);
+        if ( (playerX - zombieX) < 100 && (playerY - zombieY) < 100 ){
+            // zombieSound.play();
+        } else {
+            // zombieSound.stop(); 
+        }
     };
 
     Game.prototype.draw = () => {
@@ -122,7 +122,10 @@ function Game(context){
     }
 
     Game.prototype.batteries = () => {
-        context.fillText(`don't run out of batteries.`, 0, 350)
+        context.fillText(`don't run out of batteries.`, 0, 350);
+    }
+    Game.prototype.zombies = () => {
+        context.fillText(`don't let the zombies catch you.`, 0, 400);
     }
     Game.prototype.controls = () => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -136,6 +139,22 @@ function Game(context){
         context.fillText(`sprint (space)`, canvasWidth/2-80, 400);
         context.fillText(`items (numbers 1-9)`, canvasWidth/2-130, 500);
     }
+
+    function sound(src){
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+          this.sound.play();
+        }
+        this.stop = function(){
+          this.sound.pause();
+        }
+      }
+      
     
     Game.prototype.animate = () => {
         requestAnimFrame(this.animate);
@@ -153,9 +172,10 @@ function Game(context){
     Game.prototype.play = () => {
         // this.welcome();
         // setTimeout(this.batteries, 3000);
-        // setTimeout(this.controls, 7000);
-        // setTimeout(this.init, 12000);
-        // setTimeout(this.animate, 13000);
+        // setTimeout(this.zombies, 5000);
+        // setTimeout(this.controls, 8000);
+        // setTimeout(this.init, 13000);
+        // setTimeout(this.animate, 13500);
         this.init();
         this.animate();
         

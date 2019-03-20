@@ -118,14 +118,15 @@ function Game(context) {
   var mapArray = [maps.map1, maps.map2, maps.map3, maps.map4, maps.map5, maps.map6];
   var player;
   var gameMap;
-  var randomSpot;
 
   Game.prototype.init = function (level) {
+    zombieSound = new sound('../../src/images/zombie.m4a');
+    dungeonSound = new sound('../../src/images/dripping.mp3'); // dungeonSound.play();
+
     gameMap = new Map(mapArray[_this.level], colorArray[_this.level]);
     gameMap.generate();
     player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, _this.level);
-    zombie1 = new Zombie(context, gameMap, player, 500, 500); // zombie1 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
-    // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
+    zombie1 = new Zombie(context, gameMap, player, _this.randomSpot()[0] + 50, _this.randomSpot()[1] + 50); // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
     // console.log(zombie1)
     // console.log(zombie2)
   };
@@ -140,17 +141,16 @@ function Game(context) {
     // zombie3.update();
     // zombie4.update();
     // zombie5.update();
-    // let playerX = player.x;
-    // let playerY = player.y;
-    // let zombieX = ((zombie1.x + 300) - playerX);
-    // let zombieY = ((zombie1.y + 300) - playerY);
-    // if (
-    //     Math.floor(playerX/100) === Math.floor(zombieX/100) 
-    //     &&
-    //     Math.floor(playerY/100) === Math.floor(zombieY/100)
-    //      ){
-    //     console.log("You lose");
-    // }
+
+    var playerX = player.x;
+    var playerY = player.y;
+    var zombieX = zombie1.x + 300 - playerX;
+    var zombieY = zombie1.y + 300 - playerY;
+    console.log([Math.abs(playerX - zombieX), Math.abs(playerY - zombieY)]);
+
+    if (playerX - zombieX < 100 && playerY - zombieY < 100) {// zombieSound.play();
+    } else {// zombieSound.stop(); 
+      }
   };
 
   Game.prototype.draw = function () {
@@ -202,6 +202,10 @@ function Game(context) {
     context.fillText("don't run out of batteries.", 0, 350);
   };
 
+  Game.prototype.zombies = function () {
+    context.fillText("don't let the zombies catch you.", 0, 400);
+  };
+
   Game.prototype.controls = function () {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.font = "45px Arima Madurai";
@@ -214,6 +218,23 @@ function Game(context) {
     context.fillText("sprint (space)", canvasWidth / 2 - 80, 400);
     context.fillText("items (numbers 1-9)", canvasWidth / 2 - 130, 500);
   };
+
+  function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+
+    this.play = function () {
+      this.sound.play();
+    };
+
+    this.stop = function () {
+      this.sound.pause();
+    };
+  }
 
   Game.prototype.animate = function () {
     requestAnimFrame(_this.animate);
@@ -236,9 +257,10 @@ function Game(context) {
   Game.prototype.play = function () {
     // this.welcome();
     // setTimeout(this.batteries, 3000);
-    // setTimeout(this.controls, 7000);
-    // setTimeout(this.init, 12000);
-    // setTimeout(this.animate, 13000);
+    // setTimeout(this.zombies, 5000);
+    // setTimeout(this.controls, 8000);
+    // setTimeout(this.init, 13000);
+    // setTimeout(this.animate, 13500);
     _this.init();
 
     _this.animate();
@@ -333,22 +355,26 @@ function Map(inputMap, color) {
           context.fill();
           context.closePath();
         } else if (_this.map[j][i] === 'b') {
-          var battery = document.getElementById('battery');
+          var battery = new Image();
+          battery.src = '../../src/images/battery.png';
           context.save();
           context.drawImage(battery, 0, 0, 30, 30, i * 100 + 35, j * 100 + 35, 30, 30);
           context.restore();
         } else if (_this.map[j][i] === 'l') {
-          var lantern = document.getElementById('lantern');
+          var lantern = new Image();
+          lantern.src = '../../src/images/lantern.png';
           context.save();
           context.drawImage(lantern, 0, 0, 46, 43, i * 100 + 35, j * 100 + 30, 46, 43);
           context.restore();
         } else if (_this.map[j][i] === 'k') {
-          var key = document.getElementById('key');
+          var key = new Image();
+          key.src = '../../src/images/key.png';
           context.save();
           context.drawImage(key, 0, 0, 40, 48, i * 100 + 35, j * 100 + 30, 40, 48);
           context.restore();
         } else if (_this.map[j][i] === 'e' || _this.map[j][i] === 'p') {
-          var portal = document.getElementById('portal');
+          var portal = new Image();
+          portal.src = '../../src/images/portal.png';
           context.save();
           context.drawImage(portal, 0, 0, 50, 50, i * 100 + 35, j * 100 + 30, 50, 50);
           context.restore();
@@ -460,7 +486,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   };
 
   Player.prototype.drawSprite = function () {
-    var sprite = document.getElementById('sprite');
+    var sprite = new Image();
+    sprite.src = '../../src/images/player.png';
 
     _this.c.save();
 
@@ -610,8 +637,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         // === 4
         _this.currentRadius = _this.radius * 0.7;
         _this.flashlightAngle = 360 * Math.PI / 180;
-        _this.startAngle = 0;
-        _this.endAngle = 0;
       }
     }
 
@@ -786,7 +811,8 @@ function Zombie(context, map, player, startX, startY) {
   this.random = 3;
 
   Zombie.prototype.drawZombie = function (direction) {
-    var zombie = document.getElementById('zombie');
+    var zombie = new Image();
+    zombie.src = '../../src/images/zombie.png';
 
     _this.c.save();
 
