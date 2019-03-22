@@ -1,3 +1,5 @@
+let Sound = require('./sound');
+
 function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level) {
         this.c = context;
         this.x = canvasWidth/2;
@@ -23,6 +25,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.jumpPower = 100;
         this.batteryPower = 200;
         this.batteryDrain = 0.01;
+
+        let itemSound = new Sound('../../src/images/item.mp3');
         
         let keysDown = {};
         addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
@@ -36,13 +40,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.c.fillStyle = this.grad;
             this.c.fill();		
             this.c.restore();
-            if (this.batteryPower > 0){
-                this.batteryPower -= this.batteryDrain;
-            } else {
-                this.batteryPower = 0;
-                this.currentRadius = 0;
-                this.batteryDrain = 0;
-            }
         };
 
         Player.prototype.drawSprite = () => {
@@ -56,6 +53,13 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         }
 
         Player.prototype.regenerate = () => {
+            if (this.batteryPower > 0){
+                this.batteryPower -= this.batteryDrain;
+            } else {
+                this.batteryPower = 0;
+                this.currentRadius = 0;
+                this.batteryDrain = 0;
+            }
             if (this.jumpPower < 100) {
                 this.jumpPower += 1;
             }
@@ -70,17 +74,24 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         Player.prototype.intersectsMap = (x, y, map) => {
             let xTile = ~~(x/100);
             let yTile = ~~(y/100);
+            
             if (map.map[yTile][xTile] === 1){
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
                 this.items.push("5. Battery");
+                itemSound.play();
                 map.map[yTile][xTile]  = 0;
+                this.map.generate();
             } else if (map.map[yTile][xTile] === 'l'){
                 this.items.push("4. Lantern");
+                itemSound.play();
                 map.map[yTile][xTile]  = 0;
+                this.map.generate();
             } else if (map.map[yTile][xTile] === 'k'){
                 this.keys[0] = "Key";
+                itemSound.play();
                 map.map[yTile][xTile]  = 0;
+                this.map.generate();
             } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key"){
                 this.exit = true;
                 map.map[yTile][xTile]  = 0;

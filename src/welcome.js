@@ -1,18 +1,50 @@
-function Welcome() {
+function Welcome(context) {
 
-    const generate = () => {
+    Welcome.prototype.winner = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="45px Arima Madurai";
+        context.fillStyle = "white";
+        context.fillText(`You won!`, 200, canvasHeight/2 + 50);
+    }
+    Welcome.prototype.loser = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="45px Arima Madurai";
+        context.fillStyle = "white";
+        context.fillText(`You got eaten by a zombie!`, 200, canvasHeight/2 + 50);
+    }
+    Welcome.prototype.welcome = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="30px Arima Madurai";
+        context.fillStyle = "#b7b7b7";
+        context.fillText(`this is sliver.`, 0, 200);
+        context.fillText(`find the key.`, 0, 250);
+        context.fillText(`find the way out.`, 0, 300);
+    }
 
-        let canvas2 = document.getElementById("battery-level");
-        let context2 = canvas2.getContext("2d");	
-        context2.clearRect(0, 0, canvas2.width, canvas2.height);
-        context2.font="15px Arial";
-        context2.fillStyle = "white";
-        // context2.textAlign = "left";
-        context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
-        context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 100);
-        context2.fillText(`KEY | ITEM`, 200, 50);
-        context2.fillText(`${this.startItems}`, 200, 100);
-        context2.fillText(`${this.items}`, 200, 150);
+    Welcome.prototype.batteries = () => {
+        context.fillText(`don't run out of batteries.`, 0, 350);
+    }
+    Welcome.prototype.zombies = () => {
+        context.fillText(`don't let the zombies catch you.`, 0, 400);
+    }
+    Welcome.prototype.controls = () => {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.font="45px Arima Madurai";
+        context.fillStyle = "#b7b7b7";
+        context.fillText(`controls`, canvasWidth/2-80, 100);
+        context.font="30px Arima Madurai";
+        context.fillText(`up (w)`, canvasWidth/2-45, 200);
+        context.fillText(`left (a) / down (s) / right (d)`, canvasWidth/2-180, 250);
+        context.fillText(`look around (mouse)`, canvasWidth/2-130, 350);
+        context.fillText(`sprint (space)`, canvasWidth/2-80, 400);
+        context.fillText(`items (numbers 1-9)`, canvasWidth/2-130, 500);
+    }
+
+    Welcome.prototype.draw = () => {
+        this.welcome();
+        setTimeout(this.batteries, 3000);
+        setTimeout(this.zombies, 5000);
+        setTimeout(this.controls, 8000);
     }
 }
 module.exports = Welcome;

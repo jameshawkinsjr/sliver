@@ -101,6 +101,10 @@ var Map = __webpack_require__(/*! ./map */ "./src/map.js");
 
 var maps = __webpack_require__(/*! ./maps */ "./src/maps.js");
 
+var Welcome = __webpack_require__(/*! ./welcome */ "./src/welcome.js");
+
+var Sound = __webpack_require__(/*! ./sound */ "./src/sound.js");
+
 function Game(context) {
   var _this = this;
 
@@ -112,23 +116,21 @@ function Game(context) {
     };
   }();
 
-  var colorArray = [// '#060606',
-  // '#020202',
-  '#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
-  var mapArray = [maps.map1, maps.map2, maps.map3, maps.map4, maps.map5, maps.map6];
+  var mapArray = [// maps.map0,
+  maps.map1, maps.map2, maps.map3, maps.map4, maps.map5, maps.map6];
   var player;
   var gameMap;
+  var zombie1;
+  var welcome = new Welcome(context);
 
-  Game.prototype.init = function (level) {
-    zombieSound = new sound('../../src/images/zombie.m4a');
-    dungeonSound = new sound('../../src/images/dripping.mp3'); // dungeonSound.play();
-
-    gameMap = new Map(mapArray[_this.level], colorArray[_this.level]);
+  Game.prototype.init = function () {
+    zombieSound = new Sound('../../src/images/zombie.m4a');
+    dungeonSound = new Sound('../../src/images/dripping.mp3');
+    dungeonSound.play();
+    gameMap = new Map(mapArray[_this.level], '#000000');
     gameMap.generate();
-    player = new Player(context, 0, 60, 200, '#797939', 'black', gameMap, _this.level);
-    zombie1 = new Zombie(context, gameMap, player, _this.randomSpot()[0] + 50, _this.randomSpot()[1] + 50); // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
-    // console.log(zombie1)
-    // console.log(zombie2)
+    player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, _this.level);
+    zombie1 = new Zombie(context, gameMap, player, _this.randomSpot()[0] + 50, _this.randomSpot()[1] + 50); // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[1] + 50, this.randomSpot()[1] + 50);
   };
 
   Game.prototype.randomSpot = function () {
@@ -137,30 +139,24 @@ function Game(context) {
 
   Game.prototype.update = function () {
     player.update();
-    zombie1.update(); // zombie2.update();
-    // zombie3.update();
-    // zombie4.update();
-    // zombie5.update();
-
+    zombie1.update();
     var playerX = player.x;
     var playerY = player.y;
     var zombieX = zombie1.x + 300 - playerX;
     var zombieY = zombie1.y + 300 - playerY;
-    console.log([Math.abs(playerX - zombieX), Math.abs(playerY - zombieY)]);
 
-    if (playerX - zombieX < 100 && playerY - zombieY < 100) {// zombieSound.play();
-    } else {// zombieSound.stop(); 
-      }
+    if (Math.abs(playerX - zombieX) < 40 && Math.abs(playerY - zombieY) < 40) {
+      _this.level = -1;
+    }
+
+    if (Math.abs(playerX - zombieX) < 100 && Math.abs(playerY - zombieY) < 100) {
+      zombieSound.play();
+    } else {
+      zombieSound.stop();
+    }
   };
 
-  Game.prototype.draw = function () {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    player.draw();
-    zombie1.draw(); // zombie2.draw();
-    // zombie3.draw();
-    // zombie4.draw();
-    // zombie5.draw();
-
+  Game.prototype.shade = function () {
     context.drawImage(gameMap.image, player.x - canvasWidth / 2, player.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
     context.save();
     var gradient = context.createRadialGradient(canvasWidth / 2, canvasHeight / 2, player.currentRadius / 5, canvasWidth / 2, canvasHeight / 2, player.currentRadius);
@@ -179,62 +175,17 @@ function Game(context) {
     context.fillStyle = "#000";
     context.fill();
     context.restore();
+  };
+
+  Game.prototype.draw = function () {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    player.draw();
+    zombie1.draw();
+
+    _this.shade();
+
     player.drawSprite();
   };
-
-  Game.prototype.winner = function () {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.font = "45px Arima Madurai";
-    context.fillStyle = "white";
-    context.fillText("You won!", 200, canvasHeight / 2 + 50);
-  };
-
-  Game.prototype.welcome = function () {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.font = "30px Arima Madurai";
-    context.fillStyle = "#b7b7b7";
-    context.fillText("this is sliver.", 0, 200);
-    context.fillText("find the key.", 0, 250);
-    context.fillText("find the way out.", 0, 300);
-  };
-
-  Game.prototype.batteries = function () {
-    context.fillText("don't run out of batteries.", 0, 350);
-  };
-
-  Game.prototype.zombies = function () {
-    context.fillText("don't let the zombies catch you.", 0, 400);
-  };
-
-  Game.prototype.controls = function () {
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
-    context.font = "45px Arima Madurai";
-    context.fillStyle = "#b7b7b7";
-    context.fillText("controls", canvasWidth / 2 - 80, 100);
-    context.font = "30px Arima Madurai";
-    context.fillText("up (w)", canvasWidth / 2 - 45, 200);
-    context.fillText("left (a) / down (s) / right (d)", canvasWidth / 2 - 180, 250);
-    context.fillText("look around (mouse)", canvasWidth / 2 - 130, 350);
-    context.fillText("sprint (space)", canvasWidth / 2 - 80, 400);
-    context.fillText("items (numbers 1-9)", canvasWidth / 2 - 130, 500);
-  };
-
-  function sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-
-    this.play = function () {
-      this.sound.play();
-    };
-
-    this.stop = function () {
-      this.sound.pause();
-    };
-  }
 
   Game.prototype.animate = function () {
     requestAnimFrame(_this.animate);
@@ -250,20 +201,21 @@ function Game(context) {
     }
 
     if (_this.level === 6) {
-      _this.winner();
+      welcome.winner();
+    }
+
+    if (_this.level === -1) {
+      welcome.loser();
     }
   };
 
-  Game.prototype.play = function () {
-    // this.welcome();
-    // setTimeout(this.batteries, 3000);
-    // setTimeout(this.zombies, 5000);
-    // setTimeout(this.controls, 8000);
-    // setTimeout(this.init, 13000);
-    // setTimeout(this.animate, 13500);
-    _this.init();
+  ;
 
-    _this.animate();
+  Game.prototype.play = function () {
+    welcome.draw();
+    setTimeout(_this.init, 13000);
+    setTimeout(_this.animate, 13500); // this.init();
+    // this.animate();
   };
 }
 
@@ -304,11 +256,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var pos = getMousePos(canvas, e);
     mouse.x = pos.x;
     mouse.y = pos.y;
-  }); // Play game
-
-  var game = new Game(context); // setTimeout(game.play, 8000);
-
-  game.play();
+  });
+  var game = new Game(context);
+  setTimeout(game.play, 8000); // game.play();
 });
 
 /***/ }),
@@ -355,27 +305,27 @@ function Map(inputMap, color) {
           context.fill();
           context.closePath();
         } else if (_this.map[j][i] === 'b') {
+          context.save();
           var battery = new Image();
           battery.src = '../../src/images/battery.png';
-          context.save();
           context.drawImage(battery, 0, 0, 30, 30, i * 100 + 35, j * 100 + 35, 30, 30);
           context.restore();
         } else if (_this.map[j][i] === 'l') {
+          context.save();
           var lantern = new Image();
           lantern.src = '../../src/images/lantern.png';
-          context.save();
           context.drawImage(lantern, 0, 0, 46, 43, i * 100 + 35, j * 100 + 30, 46, 43);
           context.restore();
         } else if (_this.map[j][i] === 'k') {
+          context.save();
           var key = new Image();
           key.src = '../../src/images/key.png';
-          context.save();
           context.drawImage(key, 0, 0, 40, 48, i * 100 + 35, j * 100 + 30, 40, 48);
           context.restore();
         } else if (_this.map[j][i] === 'e' || _this.map[j][i] === 'p') {
+          context.save();
           var portal = new Image();
           portal.src = '../../src/images/portal.png';
-          context.save();
           context.drawImage(portal, 0, 0, 50, 50, i * 100 + 35, j * 100 + 30, 50, 50);
           context.restore();
         } else {
@@ -403,12 +353,14 @@ module.exports = Map;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var map1 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 'l', 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 0, 'b', 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 0, 'k', 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 'e', 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+var map0 = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+var map1 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 'l', 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 0, 0, 0, 0, 'b', 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 0, 'k', 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 'e', 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 var map2 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 'l', 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 'b', 0, 0, 0, 0, 0, 0, 1, 0, 'k', 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1], [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 'e', 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 var map3 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 'e', 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 'b', 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 'b', 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 'l', 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 'b', 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1], [1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 'b', 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 'k', 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 var map4 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 'k', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 'b', 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 'b', 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 'l', 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 'e', 1, 1, 1], [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 0, 1, 1, 'b', 1, 1, 0, 1, 1, 0, 1, 1, 'b', 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 var map5 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 'e', 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1], [1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 'l', 0, 0, 0, 0, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 'b', 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'k', 0, 0, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 0, 0, 1, 0, 'b', 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 'b', 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 var map6 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 'e', 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 'b', 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1], [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1], [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 'b', 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 'b', 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1], [1, 1, 1, 'l', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 'b', 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1], [1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 'k', 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 'b', 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 'b', 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+exports.map0 = map0;
 exports.map1 = map1;
 exports.map2 = map2;
 exports.map3 = map3;
@@ -423,7 +375,9 @@ exports.map6 = map6;
   !*** ./src/player.js ***!
   \***********************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+var Sound = __webpack_require__(/*! ./sound */ "./src/sound.js");
 
 function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level) {
   var _this = this;
@@ -453,6 +407,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   this.jumpPower = 100;
   this.batteryPower = 200;
   this.batteryDrain = 0.01;
+  var itemSound = new Sound('../../src/images/item.mp3');
   var keysDown = {};
   addEventListener("keydown", function (e) {
     keysDown[e.keyCode] = true;
@@ -475,14 +430,6 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     _this.c.fill();
 
     _this.c.restore();
-
-    if (_this.batteryPower > 0) {
-      _this.batteryPower -= _this.batteryDrain;
-    } else {
-      _this.batteryPower = 0;
-      _this.currentRadius = 0;
-      _this.batteryDrain = 0;
-    }
   };
 
   Player.prototype.drawSprite = function () {
@@ -501,6 +448,14 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   };
 
   Player.prototype.regenerate = function () {
+    if (_this.batteryPower > 0) {
+      _this.batteryPower -= _this.batteryDrain;
+    } else {
+      _this.batteryPower = 0;
+      _this.currentRadius = 0;
+      _this.batteryDrain = 0;
+    }
+
     if (_this.jumpPower < 100) {
       _this.jumpPower += 1;
     }
@@ -523,14 +478,23 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     } else if (map.map[yTile][xTile] === 'b') {
       _this.items.push("5. Battery");
 
+      itemSound.play();
       map.map[yTile][xTile] = 0;
+
+      _this.map.generate();
     } else if (map.map[yTile][xTile] === 'l') {
       _this.items.push("4. Lantern");
 
+      itemSound.play();
       map.map[yTile][xTile] = 0;
+
+      _this.map.generate();
     } else if (map.map[yTile][xTile] === 'k') {
       _this.keys[0] = "Key";
+      itemSound.play();
       map.map[yTile][xTile] = 0;
+
+      _this.map.generate();
     } else if (map.map[yTile][xTile] === 'e' && _this.keys[0] === "Key") {
       _this.exit = true;
       map.map[yTile][xTile] = 0;
@@ -715,6 +679,34 @@ module.exports = Player;
 
 /***/ }),
 
+/***/ "./src/sound.js":
+/*!**********************!*\
+  !*** ./src/sound.js ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function Sound(src) {
+  this.sound = document.createElement("audio");
+  this.sound.src = src;
+  this.sound.setAttribute("preload", "auto");
+  this.sound.setAttribute("controls", "none");
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+
+  this.play = function () {
+    this.sound.play();
+  };
+
+  this.stop = function () {
+    this.sound.pause();
+  };
+}
+
+module.exports = Sound;
+
+/***/ }),
+
 /***/ "./src/sprite.js":
 /*!***********************!*\
   !*** ./src/sprite.js ***!
@@ -791,6 +783,73 @@ module.exports = Sprite;
 
 /***/ }),
 
+/***/ "./src/welcome.js":
+/*!************************!*\
+  !*** ./src/welcome.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function Welcome(context) {
+  var _this = this;
+
+  Welcome.prototype.winner = function () {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.font = "45px Arima Madurai";
+    context.fillStyle = "white";
+    context.fillText("You won!", 200, canvasHeight / 2 + 50);
+  };
+
+  Welcome.prototype.loser = function () {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.font = "45px Arima Madurai";
+    context.fillStyle = "white";
+    context.fillText("You got eaten by a zombie!", 200, canvasHeight / 2 + 50);
+  };
+
+  Welcome.prototype.welcome = function () {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.font = "30px Arima Madurai";
+    context.fillStyle = "#b7b7b7";
+    context.fillText("this is sliver.", 0, 200);
+    context.fillText("find the key.", 0, 250);
+    context.fillText("find the way out.", 0, 300);
+  };
+
+  Welcome.prototype.batteries = function () {
+    context.fillText("don't run out of batteries.", 0, 350);
+  };
+
+  Welcome.prototype.zombies = function () {
+    context.fillText("don't let the zombies catch you.", 0, 400);
+  };
+
+  Welcome.prototype.controls = function () {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.font = "45px Arima Madurai";
+    context.fillStyle = "#b7b7b7";
+    context.fillText("controls", canvasWidth / 2 - 80, 100);
+    context.font = "30px Arima Madurai";
+    context.fillText("up (w)", canvasWidth / 2 - 45, 200);
+    context.fillText("left (a) / down (s) / right (d)", canvasWidth / 2 - 180, 250);
+    context.fillText("look around (mouse)", canvasWidth / 2 - 130, 350);
+    context.fillText("sprint (space)", canvasWidth / 2 - 80, 400);
+    context.fillText("items (numbers 1-9)", canvasWidth / 2 - 130, 500);
+  };
+
+  Welcome.prototype.draw = function () {
+    _this.welcome();
+
+    setTimeout(_this.batteries, 3000);
+    setTimeout(_this.zombies, 5000);
+    setTimeout(_this.controls, 8000);
+  };
+}
+
+module.exports = Welcome;
+
+/***/ }),
+
 /***/ "./src/zombie.js":
 /*!***********************!*\
   !*** ./src/zombie.js ***!
@@ -805,7 +864,7 @@ function Zombie(context, map, player, startX, startY) {
   this.x = startX;
   this.y = startY;
   this.map = map;
-  this.stepOfMovement = 4; // 1.7;
+  this.stepOfMovement = 5; // 1.7;
 
   this.timeSinceUpdate = 0;
   this.random = 3;
@@ -820,7 +879,7 @@ function Zombie(context, map, player, startX, startY) {
 
     _this.c.rotate(_this.directionFacing);
 
-    _this.c.drawImage(zombie, 0, 0, 305, 231, -15, -12, 30, 23);
+    _this.c.drawImage(zombie, 0, 0, 305, 231, -22.5, -17, 45, 34);
 
     _this.c.restore();
   };
