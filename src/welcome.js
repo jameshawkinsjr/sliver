@@ -10,7 +10,8 @@ function Welcome(context) {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.font="45px Arima Madurai";
         context.fillStyle = "white";
-        context.fillText(`You got eaten by a zombie!`, 200, canvasHeight/2 + 50);
+        context.fillText(`You got eaten by a zombie!`, 0, canvasHeight/2 + 50);
+
     }
     Welcome.prototype.welcome = () => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);

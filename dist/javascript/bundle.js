@@ -124,13 +124,20 @@ function Game(context) {
   var welcome = new Welcome(context);
 
   Game.prototype.init = function () {
-    zombieSound = new Sound('../../src/images/zombie.m4a');
-    dungeonSound = new Sound('../../src/images/dripping.mp3');
+    zombieSound = new Sound('./images/zombie.m4a');
+    dungeonSound = new Sound('./images/dripping.mp3');
+    levelUpSound = new Sound('./images/teleport.wav');
     dungeonSound.play();
     gameMap = new Map(mapArray[_this.level], '#000000');
     gameMap.generate();
     player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, _this.level);
-    zombie1 = new Zombie(context, gameMap, player, _this.randomSpot()[0] + 50, _this.randomSpot()[1] + 50); // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[1] + 50, this.randomSpot()[1] + 50);
+
+    var random = _this.randomSpot();
+
+    zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
+    console.log(zombie1);
+    random = _this.randomSpot();
+    zombie2 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
   };
 
   Game.prototype.randomSpot = function () {
@@ -140,16 +147,17 @@ function Game(context) {
   Game.prototype.update = function () {
     player.update();
     zombie1.update();
+    zombie2.update();
     var playerX = player.x;
     var playerY = player.y;
     var zombieX = zombie1.x + 300 - playerX;
     var zombieY = zombie1.y + 300 - playerY;
 
-    if (Math.abs(playerX - zombieX) < 40 && Math.abs(playerY - zombieY) < 40) {
+    if (Math.abs(playerX - zombieX) < 60 && Math.abs(playerY - zombieY) < 60) {
       _this.level = -1;
     }
 
-    if (Math.abs(playerX - zombieX) < 100 && Math.abs(playerY - zombieY) < 100) {
+    if (Math.abs(playerX - zombieX) < 400 && Math.abs(playerY - zombieY) < 400) {
       zombieSound.play();
     } else {
       zombieSound.stop();
@@ -181,6 +189,7 @@ function Game(context) {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     player.draw();
     zombie1.draw();
+    zombie2.draw();
 
     _this.shade();
 
@@ -196,6 +205,7 @@ function Game(context) {
 
     if (player.exit === true && _this.level < 6) {
       _this.level += 1;
+      levelUpSound.play();
 
       _this.init(_this.level);
     }
@@ -205,7 +215,21 @@ function Game(context) {
     }
 
     if (_this.level === -1) {
+      var keysDown = {};
+      addEventListener("keydown", function (e) {
+        keysDown[e.keyCode] = true;
+      });
+      addEventListener("keyup", function (e) {
+        delete keysDown[e.keyCode];
+      });
       welcome.loser();
+
+      if (38 in keysDown || 87 in keysDown) {
+        // === UP
+        _this.init(1);
+
+        _this.animate();
+      }
     }
   };
 
@@ -307,25 +331,25 @@ function Map(inputMap, color) {
         } else if (_this.map[j][i] === 'b') {
           context.save();
           var battery = new Image();
-          battery.src = '../../src/images/battery.png';
+          battery.src = './images/battery.png';
           context.drawImage(battery, 0, 0, 30, 30, i * 100 + 35, j * 100 + 35, 30, 30);
           context.restore();
         } else if (_this.map[j][i] === 'l') {
           context.save();
           var lantern = new Image();
-          lantern.src = '../../src/images/lantern.png';
+          lantern.src = './images/lantern.png';
           context.drawImage(lantern, 0, 0, 46, 43, i * 100 + 35, j * 100 + 30, 46, 43);
           context.restore();
         } else if (_this.map[j][i] === 'k') {
           context.save();
           var key = new Image();
-          key.src = '../../src/images/key.png';
+          key.src = './images/key.png';
           context.drawImage(key, 0, 0, 40, 48, i * 100 + 35, j * 100 + 30, 40, 48);
           context.restore();
         } else if (_this.map[j][i] === 'e' || _this.map[j][i] === 'p') {
           context.save();
           var portal = new Image();
-          portal.src = '../../src/images/portal.png';
+          portal.src = './images/portal.png';
           context.drawImage(portal, 0, 0, 50, 50, i * 100 + 35, j * 100 + 30, 50, 50);
           context.restore();
         } else {
@@ -407,7 +431,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   this.jumpPower = 100;
   this.batteryPower = 200;
   this.batteryDrain = 0.01;
-  var itemSound = new Sound('../../src/images/item.mp3');
+  var itemSound = new Sound('./images/item.mp3');
   var keysDown = {};
   addEventListener("keydown", function (e) {
     keysDown[e.keyCode] = true;
@@ -434,7 +458,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
 
   Player.prototype.drawSprite = function () {
     var sprite = new Image();
-    sprite.src = '../../src/images/player.png';
+    sprite.src = './images/player.png';
 
     _this.c.save();
 
@@ -804,7 +828,7 @@ function Welcome(context) {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.font = "45px Arima Madurai";
     context.fillStyle = "white";
-    context.fillText("You got eaten by a zombie!", 200, canvasHeight / 2 + 50);
+    context.fillText("You got eaten by a zombie!", 0, canvasHeight / 2 + 50);
   };
 
   Welcome.prototype.welcome = function () {
@@ -871,7 +895,7 @@ function Zombie(context, map, player, startX, startY) {
 
   Zombie.prototype.drawZombie = function (direction) {
     var zombie = new Image();
-    zombie.src = '../../src/images/zombie.png';
+    zombie.src = './images/zombie.png';
 
     _this.c.save();
 

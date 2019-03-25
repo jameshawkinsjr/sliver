@@ -34,25 +34,25 @@ function Map(inputMap, color){
                     } else if (this.map[j][i] === 'b') {
                         context.save();
                         let battery = new Image();
-                        battery.src = '../../src/images/battery.png';
+                        battery.src = './images/battery.png';
                         context.drawImage(battery, 0, 0, 30, 30, (i * 100 + 35), (j * 100 + 35), 30, 30);
                         context.restore();
                     } else if (this.map[j][i] === 'l') {
                         context.save();
                         let lantern = new Image();
-                        lantern.src = '../../src/images/lantern.png';
+                        lantern.src = './images/lantern.png';
                         context.drawImage(lantern, 0, 0, 46, 43, (i * 100 + 35), (j * 100 + 30), 46, 43);
                         context.restore();
                     } else if (this.map[j][i] === 'k') {
                         context.save();
                         let key = new Image();
-                        key.src = '../../src/images/key.png';
+                        key.src = './images/key.png';
                         context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 40, 48);
                         context.restore();
                     } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
                         context.save();
                         let portal = new Image();
-                        portal.src = '../../src/images/portal.png';
+                        portal.src = './images/portal.png';
                         context.drawImage(portal, 0, 0, 50, 50, (i * 100 + 35), (j * 100 + 30), 50, 50);
                         context.restore();
                     } else {

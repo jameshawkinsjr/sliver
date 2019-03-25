@@ -10,7 +10,7 @@ function Zombie(context, map, player, startX, startY) {
     
     Zombie.prototype.drawZombie = (direction) => {
         let zombie = new Image();
-        zombie.src = '../../src/images/zombie.png';
+        zombie.src = './images/zombie.png';
         this.c.save();
         this.c.translate((this.x + 300) - player.x, (this.y + 300) - player.y);
         this.c.rotate(this.directionFacing);

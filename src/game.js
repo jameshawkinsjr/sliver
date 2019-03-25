@@ -33,14 +33,18 @@ function Game(context){
     let zombie1;
     let welcome = new Welcome(context);
     Game.prototype.init = () => {
-        zombieSound = new Sound('../../src/images/zombie.m4a');
-        dungeonSound = new Sound('../../src/images/dripping.mp3');
+        zombieSound = new Sound('./images/zombie.m4a');
+        dungeonSound = new Sound('./images/dripping.mp3');
+        levelUpSound = new Sound('./images/teleport.wav');
         dungeonSound.play();
         gameMap = new Map(mapArray[this.level], '#000000');
         gameMap.generate();
         player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, this.level);
-        zombie1 = new Zombie(context, gameMap, player, this.randomSpot()[0] + 50, this.randomSpot()[1] + 50);
-        // zombie2 = new Zombie(context, gameMap, player, this.randomSpot()[1] + 50, this.randomSpot()[1] + 50);
+        let random = this.randomSpot();
+        zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
+        console.log(zombie1);
+        random = this.randomSpot();
+        zombie2 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
 
     };
 
@@ -51,15 +55,16 @@ function Game(context){
     Game.prototype.update = () => {
         player.update();
         zombie1.update();
+        zombie2.update();
 
         let playerX = player.x;
         let playerY = player.y;
         let zombieX = ((zombie1.x + 300) - playerX);
         let zombieY = ((zombie1.y + 300) - playerY);
-        if ( Math.abs(playerX - zombieX) < 40 && Math.abs(playerY - zombieY) < 40 ){
+        if ( Math.abs(playerX - zombieX) < 60 && Math.abs(playerY - zombieY) < 60 ){
             this.level = -1;
         }
-        if ( Math.abs(playerX - zombieX) < 100 && Math.abs(playerY - zombieY) < 100 ){
+        if ( Math.abs(playerX - zombieX) < 400 && Math.abs(playerY - zombieY) < 400 ){
             zombieSound.play();
         } else {
             zombieSound.stop(); 
@@ -93,6 +98,7 @@ function Game(context){
         context.clearRect(0, 0, canvasWidth, canvasHeight);  
         player.draw();
         zombie1.draw();
+        zombie2.draw();
         this.shade();
         player.drawSprite();
     } 
@@ -103,13 +109,21 @@ function Game(context){
         this.draw();
         if (player.exit === true && this.level < 6) {
             this.level += 1;
+            levelUpSound.play();
             this.init(this.level);
         }
         if (this.level === 6){
             welcome.winner();
         }
         if (this.level === -1){
+            let keysDown = {};
+            addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
+            addEventListener( "keyup",    (e) => { delete keysDown[e.keyCode]; } );
             welcome.loser();
+            if (38 in keysDown || 87 in keysDown) { // === UP
+                this.init(1);
+                this.animate();
+            }
         }
     };  
     ;

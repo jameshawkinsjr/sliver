@@ -1,6 +1,5 @@
 html {
-    /* cursor: url('https://github.com/jameshawkinsjr/sliver/blob/master/src/images/flashlight.png') 0 0, grab; */
-    cursor: url('../src/images/flashlight.png') 0 0, grab;
+    cursor: url('./images/flashlight.png') 0 0, grab;
     
 }
 

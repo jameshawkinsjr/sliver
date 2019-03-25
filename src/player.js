@@ -26,7 +26,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.batteryPower = 200;
         this.batteryDrain = 0.01;
 
-        let itemSound = new Sound('../../src/images/item.mp3');
+        let itemSound = new Sound('./images/item.mp3');
         
         let keysDown = {};
         addEventListener( "keydown",  (e) => { keysDown[e.keyCode] = true; } );
@@ -44,7 +44,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
 
         Player.prototype.drawSprite = () => {
             let sprite = new Image();
-            sprite.src = '../../src/images/player.png';
+            sprite.src = './images/player.png';
             this.c.save();
             this.c.translate((canvasWidth+3)/2, (canvasHeight-6)/2);
             this.c.rotate(this.directionFacing);
