@@ -1,6 +1,6 @@
 <p align="center">
       <a href="https://github.com/jameshawkinsjr/sliver">
-    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/src/images/sliver_logo.png" alt="logo" width="150">
+    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/dist/images/sliver_logo.png" alt="logo" width="150">
     </a>
 </p>
 
@@ -16,7 +16,7 @@ _sliver_ is a top-down game about searching for a key in darkness with limited s
    * A top-down game with a sprite that's in a darkened room. They can only see a sliver of light ahead of them and have to traverse through a map to get to the next room. All the while, enemies are randomly walking around as well. Encountering an enemy hurts you.
    
    <p align="center">
-    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/src/images/sliver_wireframe.png" alt="wireframe" width="600">
+    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/dist/images/sliver_wireframe.png" alt="wireframe" width="600">
 
    <p align="center">sliver wireframe</p>
    
