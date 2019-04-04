@@ -6,12 +6,15 @@ function Welcome(context) {
         context.fillStyle = "white";
         context.fillText(`you won!`, 200, canvasHeight/2 + 50);
     }
-    Welcome.prototype.loser = () => {
+    Welcome.prototype.loser = (level) => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.font="45px Arima Madurai";
         context.fillStyle = "white";
-        context.fillText(`you got eaten by a zombie!`, 30, canvasHeight/2-25);
-        context.fillText(`press 'enter' to retry`, 90, canvasHeight/2+25);
+        var text = context.measureText(`you got eaten by a zombie!`);
+        context.fillText(`you got eaten by a zombie!`, canvasWidth/2-text.width/2, canvasHeight/2-25);
+        context.font="30px Arima Madurai";
+        var text = context.measureText("press 'enter' to retry");
+        context.fillText(`press 'enter' to retry`, canvasWidth/2-text.width/2, canvasHeight/2+50);
     }
     Welcome.prototype.welcome = () => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);

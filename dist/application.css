@@ -13,12 +13,20 @@ header{
     text-align: center;
     color: rgba(255, 255, 255, 0.719);
     font-size: 30px;
-    margin: 10px;
-    padding: 10px;
+    margin: 0px;
+    padding: 0px;
+    height: 50px;
 }
 
 h1 {
-    margin: 0;
+    margin: 0px;
+    padding: 0px;
+    font-size: 1.5em;
+}
+
+span {
+    padding: 0px;
+    margin: 0px;
 }
 
 img {
@@ -116,7 +124,7 @@ main {
 
 #game-canvas {
     /* border: 1px solid red; */
-    -webkit-animation: unfoldIn 9s 1;
+    /* -webkit-animation: unfoldIn 9s 1; */
 }
 
 @keyframes unfoldIn {

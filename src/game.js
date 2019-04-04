@@ -18,8 +18,8 @@ function Game(context){
                   window.setTimeout(callback, 1000 / 60); 
                 }; 
       })(); 
+    
     let mapArray = [
-        // maps.map0,
         maps.map1,
         maps.map2,
         maps.map3,
@@ -51,14 +51,16 @@ function Game(context){
     Game.prototype.update = () => {
         player.update();
         zombie1.update();
-        if ( Math.abs(player.x - zombie1.x) < 10 && Math.abs(player.y - zombie1.y) < 10 ){
+        if ( Math.abs(player.x - zombie1.x) < 30 && Math.abs(player.y - zombie1.y) < 30 ){
             this.level = -1;
             player.level = -1;
         }
         if ( Math.abs(player.x - zombie1.x) < 400 && Math.abs(player.y - zombie1.y) < 400 ){
             zombieSound.play();
+            player.zombieNearby = true;
         } else {
             zombieSound.stop(); 
+            player.zombieNearby = false;
         }
     };
 

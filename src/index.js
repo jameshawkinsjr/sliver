@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
         );
     
     let game = new Game(context);
-    setTimeout(game.play, 8000);
-    // game.play();
+    // setTimeout(game.play, 8000);
+    game.play();
     
 
 });
