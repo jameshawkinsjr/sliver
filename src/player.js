@@ -14,6 +14,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.keys = [];
         this.exit = false;
         this.continue = false;
+        this.zombieNearby = false;
         this.level = level;
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
@@ -49,7 +50,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             this.c.save();
             this.c.translate((canvasWidth+3)/2, (canvasHeight-6)/2);
             this.c.rotate(this.directionFacing);
-            this.c.drawImage(sprite, 0, 0, 305, 231, -34,-12, 30, 23);
+            this.c.drawImage(sprite, 0, 0, 305, 231, -40, -14, 40, 30);
             this.c.restore();
         }
 
@@ -73,8 +74,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         };
 
         Player.prototype.intersectsMap = (x, y, map) => {
-            let xTile = ~~(x/100);
-            let yTile = ~~(y/100);
+            let xTile = ~~(x/120);
+            let yTile = ~~(y/120);
             
             if (map.map[yTile][xTile] === 1){
                 return true;
@@ -89,7 +90,8 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'k'){
-                this.keys[0] = "Key: In Inventory";
+                this.keys[0] = "In Inventory";
+                this.items.push("Golden Key");
                 itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
@@ -199,45 +201,85 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         };
 
         Player.prototype.drawStats = () => {
-            let canvas2 = document.getElementById("battery-level");
+            let canvas2 = document.getElementById("canvas-left");
             let context2 = canvas2.getContext("2d");	
+            let canvas3 = document.getElementById("canvas-right");
+            let context3 = canvas3.getContext("2d");	
+            let canvas4 = document.getElementById("canvas-bottom");
+            let context4 = canvas4.getContext("2d");	
             context2.clearRect(0, 0, canvas2.width, canvas2.height);
-            context2.font="15px Arima Madurai";
+            context3.clearRect(0, 0, canvas3.width, canvas3.height);
+            context4.clearRect(0, 0, canvas4.width, canvas4.height);
+            context2.font="20px Arima Madurai";
             context2.fillStyle = "white";
-            // context2.textAlign = "left";
-            context2.fillText(`Level: ${this.level + 1}`, 0, 25);
-            context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
-            if (this.keys[0] === 'Key: In Inventory'){
-                context2.fillStyle = "#F8Cf5F";
-            }
-            context2.fillText( `${this.keys[0] || "Key: Missing"}`, 0, 100);
-            context2.fillStyle = "white";
-            context2.fillText(`Flashlight`, 150, 25);
-            context2.fillText(`${this.startItems[0]}`, 150, 50);
-            context2.fillText(`${this.startItems[1]}`, 150, 75);
-            context2.fillText(`${this.startItems[2]}`, 150, 100);
-            context2.fillText(`Items`, 275, 25);
-            context2.fillText(`${this.items[0] || ""}`, 275, 50);
-            context2.fillText(`${this.items[1] || ""}`, 275, 75);
-            context2.fillText(`${this.items[2] || ""}`, 275, 100);
-            context2.fillText(`Objectives`, 375, 25);
-            if (this.keys[0] === 'Key: In Inventory'){
-                context2.fillText(`Find the Key`, 375, 50);
-                var text = context2.measureText("Find the Key");
-                context2.fillRect(375, 45, text.width, 2);
-                context2.fillText(`Find the Exit`, 375, 75); 
-            } else {
-                context2.fillText(`Find the Key`, 375, 50);
-                context2.fillText(`Find the Exit`, 375, 75); 
-            }
+            context3.font="20px Arima Madurai";
+            context3.fillStyle = "white";
+            context4.font="20px Arima Madurai";
+            context4.fillStyle = "white";
+            context4.fillText(`Level: ${this.level + 1}`, 0, 25);
+            context4.fillText(`Sprint:`, 100, 25);
+            context4.fillText(`Key:`, 375, 25);
+            context4.fillText(`Battery:`, 240, 25);
             if (this.batteryPower < 50){
-                context2.fillStyle = "#C53426";
+                context4.fillStyle = "red";
             } else if (this.batteryPower < 100){
-                context2.fillStyle = "#F8Cf5F";
+                context4.fillStyle = "yellow";
             } else if (this.batteryPower > 150) {
-                context2.fillStyle = "#63d26e";
+                context4.fillStyle = "#63d26e";
             }
-            context2.fillText(`Battery: ${Math.floor(this.batteryPower)}`, 0, 75);
+            context4.fillText(`${Math.floor(this.batteryPower)}`, 315, 25);
+            if (this.jumpPower < 25){
+                context4.fillStyle = "red";
+            } else {
+                context4.fillStyle = "white";
+            }
+            context4.fillText(`${Math.floor(this.jumpPower)}`, 165, 25);
+            if (this.keys[0] === 'In Inventory'){
+                context4.fillStyle = "#63d26e";
+                context4.fillText( this.keys[0], 420, 25);
+            } else {
+                context4.fillStyle = "red";
+                context4.fillText( "Missing", 420, 25);
+            }
+            if (this.zombieNearby){
+                context4.fillStyle = "red";
+                context4.fillText(`CAUTION: ZOMBIE NEARBY`, 0, 75);
+                context4.fillStyle = "white";
+            }
+            context2.fillStyle = "white";
+            context3.fillText(`${this.startItems[0]}`, 0, 50);
+            context3.fillText(`${this.startItems[1]}`, 0, 75);
+            context3.fillText(`${this.startItems[2]}`, 0, 100);
+            context3.fillText(`${this.items[0] || ""}`, 0, 175);
+            context3.fillText(`${this.items[1] || ""}`, 0, 200);
+            context3.fillText(`${this.items[2] || ""}`, 0, 225);
+            context3.fillText(`${this.items[3] || ""}`, 0, 250);
+            context3.fillText(`${this.items[4] || ""}`, 0, 275);
+            context2.fillText(`Up: W`, 0, 150);
+            context2.fillText(`Left: A`, 0, 175);
+            context2.fillText(`Down: S`, 0, 200);
+            context2.fillText(`Right: D`, 0, 225);
+            context2.fillText(`Sprint: Shift`, 0, 250);
+            context2.fillText(`Items: 1-9`, 0, 275);
+            if (this.keys[0] === 'Key: In Inventory'){
+                context2.fillStyle = "#323537";
+                context2.fillText(`Find the Key`, 0, 50);
+                var text = context2.measureText("Find the Key");
+                context2.fillRect(0, 45, text.width, 2);
+                context2.fillStyle = "#63d26e";
+                context2.fillText(`Find the Exit`, 0, 75); 
+            } else {
+                context2.fillStyle = "#63d26e";
+                context2.fillText(`Find the Key`, 0, 50);
+                context2.fillStyle = "white";
+                context2.fillText(`Find the Exit`, 0, 75); 
+            }
+            context2.fillStyle = "yellow";
+            context3.fillStyle = "yellow";
+            context3.fillText(`Flashlight`, 0, 25);
+            context3.fillText(`Items`, 0, 150);
+            context2.fillText(`Objectives`, 0, 25);
+            context2.fillText(`Controls`, 0, 125);
         }
         
         Player.prototype.update = () => {

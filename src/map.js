@@ -1,9 +1,9 @@
 var Sprite = require('./sprite');
 
 function Map(inputMap, color){
-        this.map = inputMap;
-        this.rowWidth = 100;
-        this.rowHeight = 100;
+        this.map = [].concat(inputMap);
+        this.rowWidth = 120;
+        this.rowHeight = 120;
         this.width = inputMap[0].length * this.rowWidth;
         this.height = inputMap.length * this.rowHeight;
         this.color = color;
@@ -47,7 +47,7 @@ function Map(inputMap, color){
                         context.save();
                         let key = new Image();
                         key.src = './images/key.png';
-                        context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 40, 48);
+                        context.drawImage(key, 0, 0, 40, 48, (i * 100 + 35), (j * 100 + 30), 28, 34);
                         context.restore();
                     } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
                         context.save();

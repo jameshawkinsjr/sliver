@@ -12,15 +12,15 @@ function Zombie(context, map, player, startX, startY) {
         let zombie = new Image();
         zombie.src = './images/zombie.png';
         this.c.save();
-        this.c.translate((this.x + 300) - player.x, (this.y + 300) - player.y);
+        this.c.translate((this.x + 350) - player.x, (this.y + 350) - player.y);
         this.c.rotate(this.directionFacing);
         this.c.drawImage(zombie, 0, 0, 305, 231, -22.5, -17, 45, 34);
         this.c.restore();
     };
 
     Zombie.prototype.intersectsMap = (x, y, map) => {
-        let xTile = ~~(x/100);
-        let yTile = ~~(y/100);
+        let xTile = ~~(x/120);
+        let yTile = ~~(y/120);
         if ( map.map[yTile][xTile] === 1){
             return true;
         } else {
