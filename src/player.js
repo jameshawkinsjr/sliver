@@ -1,6 +1,6 @@
 let Sound = require('./sound');
 
-function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level) {
+function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level, mute) {
         this.c = context;
         this.x = canvasWidth/2;
         this.y = canvasHeight/2;
@@ -13,6 +13,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.items = [];
         this.keys = [];
         this.exit = false;
+        this.mute = false;
         this.continue = false;
         this.zombieNearby = false;
         this.level = level;
@@ -81,21 +82,21 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
                 this.items.push("[5] Battery");
-                itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
+                if (!this.mute) itemSound.play();
             } else if (map.map[yTile][xTile] === 'l'){
                 this.items.push("[4] Lantern");
-                itemSound.play();
+                if (!this.mute) itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'k'){
                 this.keys[0] = "In Inventory";
                 this.items.push("Golden Key");
-                itemSound.play();
+                if (!this.mute) itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
-            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key: In Inventory"){
+            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "In Inventory"){
                 this.exit = true;
                 map.map[yTile][xTile]  = 0;
             }
@@ -260,7 +261,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             context2.fillText(`Down: S`, 0, 200);
             context2.fillText(`Right: D`, 0, 225);
             context2.fillText(`Sprint: Shift`, 0, 250);
-            context2.fillText(`Items: 1-9`, 0, 275);
+            context2.fillText(`Items: 1-5`, 0, 275);
             if (this.keys[0] === 'Key: In Inventory'){
                 context2.fillStyle = "#323537";
                 context2.fillText(`Find the Key`, 0, 50);

@@ -28,6 +28,7 @@ function Game(context){
         maps.map6,
     ];
 
+    let mute = false;
     let player;
     let gameMap;
     let zombie1;
@@ -36,12 +37,23 @@ function Game(context){
         zombieSound = new Sound('./images/zombie.m4a');
         dungeonSound = new Sound('./images/dripping.mp3');
         levelUpSound = new Sound('./images/teleport.wav');
-        dungeonSound.play();
+        if (!mute) dungeonSound.play();
         gameMap = new Map(mapArray[this.level], '#000000');
         gameMap.generate();
-        player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, this.level);
+        player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, this.level, mute);
         let random = this.randomSpot();
         zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
+        let canvasMute = document.getElementById("canvas-mute");
+        let context4 = canvasMute.getContext('2d')
+        canvasMute.addEventListener('click', (e) => {
+            mute = !mute;
+            player.mute = !player.mute;
+            if (!mute){
+                dungeonSound.play(); 
+            } else {
+                dungeonSound.stop(); 
+            }
+        });
     };
 
     Game.prototype.randomSpot = () => {
@@ -56,11 +68,25 @@ function Game(context){
             player.level = -1;
         }
         if ( Math.abs(player.x - zombie1.x) < 400 && Math.abs(player.y - zombie1.y) < 400 ){
-            zombieSound.play();
             player.zombieNearby = true;
+            if (mute){
+                zombieSound.stop(); 
+            } else {
+                zombieSound.play();
+            }
         } else {
             zombieSound.stop(); 
             player.zombieNearby = false;
+        }
+        let canvasMute = document.getElementById("canvas-mute");
+        let context4 = canvasMute.getContext('2d')
+        context4.clearRect(0, 0, canvasWidth, canvasHeight);  
+        context4.font="25px Arima Madurai";
+        context4.fillStyle = "white";
+        if (mute){
+            context4.fillText(`🔇`, 50, 25);
+        } else {
+            context4.fillText(`🔈`, 50, 25);
         }
     };
 
@@ -101,7 +127,7 @@ function Game(context){
         this.draw();
         if (player.exit === true && this.level < 6) {
             this.level += 1;
-            levelUpSound.play();
+            if (!mute) levelUpSound.play();
             this.init();
         }
         if (this.level === 6){
@@ -109,7 +135,7 @@ function Game(context){
         }
         if (player.continue === true && this.level === -1) {
             this.level = 0;
-            levelUpSound.play();
+            if (!mute) levelUpSound.play();
             this.init();
         }
         if (this.level === -1){

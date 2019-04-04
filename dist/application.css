@@ -29,9 +29,14 @@ span {
     margin: 0px;
 }
 
-img {
-    display: none;
+input[value="mute1"]:checked ~ i[class='fas fa-volume-up']{
+    display:none;
 }
+
+input[value="mute2"]:checked ~ i[class='fas fa-volume-mute']{
+    display:none;
+}
+
 .fade-in-1 {
     -webkit-animation: fade-in 2s 1;
 }

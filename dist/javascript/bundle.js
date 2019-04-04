@@ -116,8 +116,8 @@ function Game(context) {
     };
   }();
 
-  var mapArray = [// maps.map0,
-  maps.map1, maps.map2, maps.map3, maps.map4, maps.map5, maps.map6];
+  var mapArray = [maps.map1, maps.map2, maps.map3, maps.map4, maps.map5, maps.map6];
+  var mute = false;
   var player;
   var gameMap;
   var zombie1;
@@ -127,17 +127,26 @@ function Game(context) {
     zombieSound = new Sound('./images/zombie.m4a');
     dungeonSound = new Sound('./images/dripping.mp3');
     levelUpSound = new Sound('./images/teleport.wav');
-    dungeonSound.play();
+    if (!mute) dungeonSound.play();
     gameMap = new Map(mapArray[_this.level], '#000000');
     gameMap.generate();
-    player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, _this.level);
+    player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, _this.level, mute);
 
     var random = _this.randomSpot();
 
     zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
-    console.log(zombie1);
-    random = _this.randomSpot();
-    zombie2 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
+    var canvasMute = document.getElementById("canvas-mute");
+    var context4 = canvasMute.getContext('2d');
+    canvasMute.addEventListener('click', function (e) {
+      mute = !mute;
+      player.mute = !player.mute;
+
+      if (!mute) {
+        dungeonSound.play();
+      } else {
+        dungeonSound.stop();
+      }
+    });
   };
 
   Game.prototype.randomSpot = function () {
@@ -147,20 +156,35 @@ function Game(context) {
   Game.prototype.update = function () {
     player.update();
     zombie1.update();
-    zombie2.update();
-    var playerX = player.x;
-    var playerY = player.y;
-    var zombieX = zombie1.x + 300 - playerX;
-    var zombieY = zombie1.y + 300 - playerY;
 
-    if (Math.abs(playerX - zombieX) < 60 && Math.abs(playerY - zombieY) < 60) {
+    if (Math.abs(player.x - zombie1.x) < 30 && Math.abs(player.y - zombie1.y) < 30) {
       _this.level = -1;
+      player.level = -1;
     }
 
-    if (Math.abs(playerX - zombieX) < 400 && Math.abs(playerY - zombieY) < 400) {
-      zombieSound.play();
+    if (Math.abs(player.x - zombie1.x) < 400 && Math.abs(player.y - zombie1.y) < 400) {
+      player.zombieNearby = true;
+
+      if (mute) {
+        zombieSound.stop();
+      } else {
+        zombieSound.play();
+      }
     } else {
       zombieSound.stop();
+      player.zombieNearby = false;
+    }
+
+    var canvasMute = document.getElementById("canvas-mute");
+    var context4 = canvasMute.getContext('2d');
+    context4.clearRect(0, 0, canvasWidth, canvasHeight);
+    context4.font = "25px Arima Madurai";
+    context4.fillStyle = "white";
+
+    if (mute) {
+      context4.fillText("\uD83D\uDD07", 50, 25);
+    } else {
+      context4.fillText("\uD83D\uDD08", 50, 25);
     }
   };
 
@@ -189,7 +213,6 @@ function Game(context) {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     player.draw();
     zombie1.draw();
-    zombie2.draw();
 
     _this.shade();
 
@@ -205,41 +228,36 @@ function Game(context) {
 
     if (player.exit === true && _this.level < 6) {
       _this.level += 1;
-      levelUpSound.play();
+      if (!mute) levelUpSound.play();
 
-      _this.init(_this.level);
+      _this.init();
     }
 
     if (_this.level === 6) {
       welcome.winner();
     }
 
+    if (player.continue === true && _this.level === -1) {
+      _this.level = 0;
+      if (!mute) levelUpSound.play();
+
+      _this.init();
+    }
+
     if (_this.level === -1) {
-      var keysDown = {};
-      addEventListener("keydown", function (e) {
-        keysDown[e.keyCode] = true;
-      });
-      addEventListener("keyup", function (e) {
-        delete keysDown[e.keyCode];
-      });
       welcome.loser();
-
-      if (38 in keysDown || 87 in keysDown) {
-        // === UP
-        _this.init(1);
-
-        _this.animate();
-      }
     }
   };
 
   ;
 
   Game.prototype.play = function () {
-    welcome.draw();
-    setTimeout(_this.init, 13000);
-    setTimeout(_this.animate, 13500); // this.init();
-    // this.animate();
+    // welcome.draw();
+    // setTimeout(this.init, 13000);
+    // setTimeout(this.animate, 13500);
+    _this.init();
+
+    _this.animate();
   };
 }
 
@@ -281,8 +299,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     mouse.x = pos.x;
     mouse.y = pos.y;
   });
-  var game = new Game(context);
-  setTimeout(game.play, 8000); // game.play();
+  var game = new Game(context); // setTimeout(game.play, 8000);
+
+  game.play();
 });
 
 /***/ }),
@@ -299,9 +318,9 @@ var Sprite = __webpack_require__(/*! ./sprite */ "./src/sprite.js");
 function Map(inputMap, color) {
   var _this = this;
 
-  this.map = inputMap;
-  this.rowWidth = 100;
-  this.rowHeight = 100;
+  this.map = [].concat(inputMap);
+  this.rowWidth = 120;
+  this.rowHeight = 120;
   this.width = inputMap[0].length * this.rowWidth;
   this.height = inputMap.length * this.rowHeight;
   this.color = color;
@@ -332,25 +351,25 @@ function Map(inputMap, color) {
           context.save();
           var battery = new Image();
           battery.src = './images/battery.png';
-          context.drawImage(battery, 0, 0, 30, 30, i * 100 + 35, j * 100 + 35, 30, 30);
+          context.drawImage(battery, 0, 0, 30, 30, i * 120 + 35, j * 120 + 35, 30, 30);
           context.restore();
         } else if (_this.map[j][i] === 'l') {
           context.save();
           var lantern = new Image();
           lantern.src = './images/lantern.png';
-          context.drawImage(lantern, 0, 0, 46, 43, i * 100 + 35, j * 100 + 30, 46, 43);
+          context.drawImage(lantern, 0, 0, 46, 43, i * 120 + 35, j * 120 + 30, 46, 43);
           context.restore();
         } else if (_this.map[j][i] === 'k') {
           context.save();
           var key = new Image();
           key.src = './images/key.png';
-          context.drawImage(key, 0, 0, 40, 48, i * 100 + 35, j * 100 + 30, 40, 48);
+          context.drawImage(key, 0, 0, 40, 48, i * 120 + 35, j * 120 + 30, 28, 34);
           context.restore();
         } else if (_this.map[j][i] === 'e' || _this.map[j][i] === 'p') {
           context.save();
           var portal = new Image();
           portal.src = './images/portal.png';
-          context.drawImage(portal, 0, 0, 50, 50, i * 100 + 35, j * 100 + 30, 50, 50);
+          context.drawImage(portal, 0, 0, 50, 50, i * 120 + 35, j * 120 + 30, 50, 50);
           context.restore();
         } else {
           _this.blankSpots.push([x, y]);
@@ -403,7 +422,7 @@ exports.map6 = map6;
 
 var Sound = __webpack_require__(/*! ./sound */ "./src/sound.js");
 
-function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level) {
+function Player(context, centerDegree, flashlightWidth, radius, color, color2, map, level, mute) {
   var _this = this;
 
   this.c = context;
@@ -414,10 +433,13 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   this.color = color;
   this.color2 = color2;
   this.map = map;
-  this.startItems = [' 1. Off', ' 2. Hi-Beam', ' 3. Normal'];
+  this.startItems = [' [1] Off', ' [2] Hi-Beam', ' [3] Normal'];
   this.items = [];
   this.keys = [];
   this.exit = false;
+  this.mute = false;
+  this.continue = false;
+  this.zombieNearby = false;
   this.level = level;
   this.flashlightWidth = flashlightWidth;
   this.centerDegree = centerDegree;
@@ -466,7 +488,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
 
     _this.c.rotate(_this.directionFacing);
 
-    _this.c.drawImage(sprite, 0, 0, 305, 231, -34, -12, 30, 23);
+    _this.c.drawImage(sprite, 0, 0, 305, 231, -40, -14, 40, 30);
 
     _this.c.restore();
   };
@@ -494,32 +516,36 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   };
 
   Player.prototype.intersectsMap = function (x, y, map) {
-    var xTile = ~~(x / 100);
-    var yTile = ~~(y / 100);
+    var xTile = ~~(x / 120);
+    var yTile = ~~(y / 120);
 
     if (map.map[yTile][xTile] === 1) {
       return true;
     } else if (map.map[yTile][xTile] === 'b') {
-      _this.items.push("5. Battery");
+      _this.items.push("[5] Battery");
 
-      itemSound.play();
       map.map[yTile][xTile] = 0;
 
       _this.map.generate();
-    } else if (map.map[yTile][xTile] === 'l') {
-      _this.items.push("4. Lantern");
 
-      itemSound.play();
+      if (!_this.mute) itemSound.play();
+    } else if (map.map[yTile][xTile] === 'l') {
+      _this.items.push("[4] Lantern");
+
+      if (!_this.mute) itemSound.play();
       map.map[yTile][xTile] = 0;
 
       _this.map.generate();
     } else if (map.map[yTile][xTile] === 'k') {
-      _this.keys[0] = "Key";
-      itemSound.play();
+      _this.keys[0] = "In Inventory";
+
+      _this.items.push("Golden Key");
+
+      if (!_this.mute) itemSound.play();
       map.map[yTile][xTile] = 0;
 
       _this.map.generate();
-    } else if (map.map[yTile][xTile] === 'e' && _this.keys[0] === "Key") {
+    } else if (map.map[yTile][xTile] === 'e' && _this.keys[0] === "In Inventory") {
       _this.exit = true;
       map.map[yTile][xTile] = 0;
     }
@@ -528,10 +554,14 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
   };
 
   Player.prototype.movePlayer = function () {
+    if (13 in keysDown && _this.level === -1) {
+      _this.continue = true;
+    }
+
     if (38 in keysDown || 87 in keysDown) {
       // === UP
       if (_this.y > 5 && _this.intersectsMap(_this.x, _this.y - 10, _this.map) === false) {
-        if (32 in keysDown && _this.jumpPower > 6) {
+        if ((32 in keysDown || 16 in keysDown) && _this.jumpPower > 6) {
           _this.y -= _this.stepOfMovement * 2;
           _this.jumpPower -= 5;
         } else {
@@ -543,7 +573,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     if (40 in keysDown || 83 in keysDown) {
       // === DOWN
       if (_this.y < _this.map.height - 5 && _this.intersectsMap(_this.x, _this.y + 10, _this.map) === false) {
-        if (32 in keysDown && _this.jumpPower > 5) {
+        if ((32 in keysDown || 16 in keysDown) && _this.jumpPower > 5) {
           _this.y += _this.stepOfMovement * 2;
           _this.jumpPower -= 5;
         } else {
@@ -555,7 +585,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     if (37 in keysDown || 65 in keysDown) {
       // === LEFT
       if (_this.x > 5 && _this.intersectsMap(_this.x - 10, _this.y, _this.map) === false) {
-        if (32 in keysDown && _this.jumpPower > 5) {
+        if ((32 in keysDown || 16 in keysDown) && _this.jumpPower > 5) {
           _this.x -= _this.stepOfMovement * 2;
           _this.jumpPower -= 5;
         } else {
@@ -567,7 +597,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
     if (39 in keysDown || 68 in keysDown) {
       // === RIGHT
       if (_this.x < _this.map.width - 5 && _this.intersectsMap(_this.x + 10, _this.y, _this.map) === false) {
-        if (32 in keysDown && _this.jumpPower > 5) {
+        if ((32 in keysDown || 16 in keysDown) && _this.jumpPower > 5) {
           _this.x += _this.stepOfMovement * 2;
           _this.jumpPower -= 5;
         } else {
@@ -621,63 +651,110 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         _this.currentRadius = _this.radius;
         _this.flashlightAngle = _this.flashlightWidth * Math.PI / 180;
         _this.batteryDrain = 0.01;
-      } else if (52 in keysDown && _this.items.includes("4. Lantern")) {
+      } else if (52 in keysDown && _this.items.includes("[4] Lantern")) {
         // === 4
         _this.currentRadius = _this.radius * 0.7;
         _this.flashlightAngle = 360 * Math.PI / 180;
       }
     }
 
-    if (53 in keysDown && _this.items.includes("5. Battery")) {
+    if (53 in keysDown && _this.items.includes("[5] Battery")) {
       // === 5
       _this.batteryPower += 50;
 
-      _this.items.splice(_this.items.indexOf("5. Battery"), 1);
+      _this.items.splice(_this.items.indexOf("[5] Battery"), 1);
     }
   };
 
   Player.prototype.drawStats = function () {
-    var canvas2 = document.getElementById("battery-level");
+    var canvas2 = document.getElementById("canvas-left");
     var context2 = canvas2.getContext("2d");
+    var canvas3 = document.getElementById("canvas-right");
+    var context3 = canvas3.getContext("2d");
+    var canvas4 = document.getElementById("canvas-bottom");
+    var context4 = canvas4.getContext("2d");
     context2.clearRect(0, 0, canvas2.width, canvas2.height);
-    context2.font = "15px Arima Madurai";
-    context2.fillStyle = "white"; // context2.textAlign = "left";
-
-    context2.fillText("Level: ".concat(_this.level + 1), 0, 25);
-    context2.fillText("Sprint: ".concat(_this.jumpPower), 0, 50);
-
-    if (_this.keys[0] === 'Key') {
-      context2.fillStyle = "#F8Cf5F";
-    }
-
-    context2.fillText("".concat(_this.keys[0] || "Key: Missing"), 0, 100);
+    context3.clearRect(0, 0, canvas3.width, canvas3.height);
+    context4.clearRect(0, 0, canvas4.width, canvas4.height);
+    context2.font = "20px Arima Madurai";
     context2.fillStyle = "white";
-    context2.fillText("Flashlight", 150, 25);
-    context2.fillText("".concat(_this.startItems[0]), 150, 50);
-    context2.fillText("".concat(_this.startItems[1]), 150, 75);
-    context2.fillText("".concat(_this.startItems[2]), 150, 100);
-    context2.fillText("Items", 275, 25);
-    context2.fillText("".concat(_this.items[0] || ""), 275, 50);
-    context2.fillText("".concat(_this.items[1] || ""), 275, 75);
-    context2.fillText("".concat(_this.items[2] || ""), 275, 100);
-    context2.fillText("Objective", 375, 25);
-    context2.fillText("Objective", 375, 25);
-
-    if (_this.keys[0] === 'Key') {
-      context2.fillText("Find the Exit", 375, 50);
-    } else {
-      context2.fillText("Find the Key", 375, 50);
-    }
+    context3.font = "20px Arima Madurai";
+    context3.fillStyle = "white";
+    context4.font = "20px Arima Madurai";
+    context4.fillStyle = "white";
+    context4.fillText("Level: ".concat(_this.level + 1), 0, 25);
+    context4.fillText("Sprint:", 100, 25);
+    context4.fillText("Key:", 375, 25);
+    context4.fillText("Battery:", 240, 25);
 
     if (_this.batteryPower < 50) {
-      context2.fillStyle = "#C53426";
+      context4.fillStyle = "red";
     } else if (_this.batteryPower < 100) {
-      context2.fillStyle = "#F8Cf5F";
+      context4.fillStyle = "yellow";
     } else if (_this.batteryPower > 150) {
-      context2.fillStyle = "#63d26e";
+      context4.fillStyle = "#63d26e";
     }
 
-    context2.fillText("Battery: ".concat(Math.floor(_this.batteryPower)), 0, 75);
+    context4.fillText("".concat(Math.floor(_this.batteryPower)), 315, 25);
+
+    if (_this.jumpPower < 25) {
+      context4.fillStyle = "red";
+    } else {
+      context4.fillStyle = "white";
+    }
+
+    context4.fillText("".concat(Math.floor(_this.jumpPower)), 165, 25);
+
+    if (_this.keys[0] === 'In Inventory') {
+      context4.fillStyle = "#63d26e";
+      context4.fillText(_this.keys[0], 420, 25);
+    } else {
+      context4.fillStyle = "red";
+      context4.fillText("Missing", 420, 25);
+    }
+
+    if (_this.zombieNearby) {
+      context4.fillStyle = "red";
+      context4.fillText("CAUTION: ZOMBIE NEARBY", 0, 75);
+      context4.fillStyle = "white";
+    }
+
+    context2.fillStyle = "white";
+    context3.fillText("".concat(_this.startItems[0]), 0, 50);
+    context3.fillText("".concat(_this.startItems[1]), 0, 75);
+    context3.fillText("".concat(_this.startItems[2]), 0, 100);
+    context3.fillText("".concat(_this.items[0] || ""), 0, 175);
+    context3.fillText("".concat(_this.items[1] || ""), 0, 200);
+    context3.fillText("".concat(_this.items[2] || ""), 0, 225);
+    context3.fillText("".concat(_this.items[3] || ""), 0, 250);
+    context3.fillText("".concat(_this.items[4] || ""), 0, 275);
+    context2.fillText("Up: W", 0, 150);
+    context2.fillText("Left: A", 0, 175);
+    context2.fillText("Down: S", 0, 200);
+    context2.fillText("Right: D", 0, 225);
+    context2.fillText("Sprint: Shift", 0, 250);
+    context2.fillText("Items: 1-5", 0, 275);
+
+    if (_this.keys[0] === 'Key: In Inventory') {
+      context2.fillStyle = "#323537";
+      context2.fillText("Find the Key", 0, 50);
+      var text = context2.measureText("Find the Key");
+      context2.fillRect(0, 45, text.width, 2);
+      context2.fillStyle = "#63d26e";
+      context2.fillText("Find the Exit", 0, 75);
+    } else {
+      context2.fillStyle = "#63d26e";
+      context2.fillText("Find the Key", 0, 50);
+      context2.fillStyle = "white";
+      context2.fillText("Find the Exit", 0, 75);
+    }
+
+    context2.fillStyle = "yellow";
+    context3.fillStyle = "yellow";
+    context3.fillText("Flashlight", 0, 25);
+    context3.fillText("Items", 0, 150);
+    context2.fillText("Objectives", 0, 25);
+    context2.fillText("Controls", 0, 125);
   };
 
   Player.prototype.update = function () {
@@ -821,14 +898,18 @@ function Welcome(context) {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.font = "45px Arima Madurai";
     context.fillStyle = "white";
-    context.fillText("You won!", 200, canvasHeight / 2 + 50);
+    context.fillText("you won!", 200, canvasHeight / 2 + 50);
   };
 
-  Welcome.prototype.loser = function () {
+  Welcome.prototype.loser = function (level) {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.font = "45px Arima Madurai";
     context.fillStyle = "white";
-    context.fillText("You got eaten by a zombie!", 0, canvasHeight / 2 + 50);
+    var text = context.measureText("you got eaten by a zombie!");
+    context.fillText("you got eaten by a zombie!", canvasWidth / 2 - text.width / 2, canvasHeight / 2 - 25);
+    context.font = "30px Arima Madurai";
+    var text = context.measureText("press 'enter' to retry");
+    context.fillText("press 'enter' to retry", canvasWidth / 2 - text.width / 2, canvasHeight / 2 + 50);
   };
 
   Welcome.prototype.welcome = function () {
@@ -899,7 +980,7 @@ function Zombie(context, map, player, startX, startY) {
 
     _this.c.save();
 
-    _this.c.translate(_this.x + 300 - player.x, _this.y + 300 - player.y);
+    _this.c.translate(_this.x + 350 - player.x, _this.y + 350 - player.y);
 
     _this.c.rotate(_this.directionFacing);
 
@@ -909,8 +990,8 @@ function Zombie(context, map, player, startX, startY) {
   };
 
   Zombie.prototype.intersectsMap = function (x, y, map) {
-    var xTile = ~~(x / 100);
-    var yTile = ~~(y / 100);
+    var xTile = ~~(x / 120);
+    var yTile = ~~(y / 120);
 
     if (map.map[yTile][xTile] === 1) {
       return true;
