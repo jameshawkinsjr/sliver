@@ -9,10 +9,11 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
         this.color = color;
         this.color2 = color2;
         this.map = map;
-        this.startItems = [' 1. Off', ' 2. Hi-Beam', ' 3. Normal'];
+        this.startItems = [' [1] Off', ' [2] Hi-Beam', ' [3] Normal'];
         this.items = [];
         this.keys = [];
         this.exit = false;
+        this.continue = false;
         this.level = level;
         this.flashlightWidth = flashlightWidth;
         this.centerDegree = centerDegree;
@@ -78,31 +79,34 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             if (map.map[yTile][xTile] === 1){
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
-                this.items.push("5. Battery");
+                this.items.push("[5] Battery");
                 itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'l'){
-                this.items.push("4. Lantern");
+                this.items.push("[4] Lantern");
                 itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'k'){
-                this.keys[0] = "Key";
+                this.keys[0] = "Key: In Inventory";
                 itemSound.play();
                 map.map[yTile][xTile]  = 0;
                 this.map.generate();
-            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key"){
+            } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "Key: In Inventory"){
                 this.exit = true;
                 map.map[yTile][xTile]  = 0;
             }
             return false;
-        }
+        };
             
         Player.prototype.movePlayer = () => {
+            if (13 in keysDown && this.level === -1){
+                this.continue = true;
+            }
             if (38 in keysDown || 87 in keysDown) { // === UP
                 if (this.y > 5 && this.intersectsMap(this.x, this.y - 10, this.map) === false) {
-                    if (32 in keysDown && this.jumpPower > 6) {
+                    if ( (32 in keysDown || 16 in keysDown) && this.jumpPower > 6) {
                         this.y -= this.stepOfMovement * 2;
                         this.jumpPower -= 5;
                     } else {
@@ -112,7 +116,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             }
             if (40 in keysDown || 83 in keysDown) { // === DOWN
                 if (this.y < this.map.height-5 &&  this.intersectsMap(this.x, this.y + 10, this.map) === false) {
-                    if (32 in keysDown && this.jumpPower > 5) {
+                    if ((32 in keysDown || 16 in keysDown) && this.jumpPower > 5) {
                         this.y += this.stepOfMovement * 2;
                         this.jumpPower -= 5;
                     } else {
@@ -122,7 +126,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             }
             if (37 in keysDown || 65 in keysDown) { // === LEFT
                 if (this.x > 5  && this.intersectsMap(this.x - 10, this.y, this.map) === false) {
-                    if (32 in keysDown && this.jumpPower > 5) {
+                    if ((32 in keysDown || 16 in keysDown) && this.jumpPower > 5) {
                         this.x -= this.stepOfMovement * 2;
                         this.jumpPower -= 5;
                     } else {
@@ -132,7 +136,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             }
             if (39 in keysDown || 68 in keysDown) { // === RIGHT
                 if (this.x < this.map.width-5 &&  this.intersectsMap(this.x + 10, this.y, this.map) === false) {
-                    if (32 in keysDown && this.jumpPower > 5) {
+                    if ((32 in keysDown || 16 in keysDown) && this.jumpPower > 5) {
                         this.x += this.stepOfMovement * 2;
                         this.jumpPower -= 5;
                     } else {
@@ -182,14 +186,14 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
                     this.currentRadius = this.radius;
                     this.flashlightAngle = ((this.flashlightWidth) * Math.PI / 180);
                     this.batteryDrain = 0.01;
-                } else if (52 in keysDown && this.items.includes("4. Lantern") ) { // === 4
+                } else if (52 in keysDown && this.items.includes("[4] Lantern") ) { // === 4
                     this.currentRadius = this.radius * 0.7;
                     this.flashlightAngle = ((360) * Math.PI / 180);
                 }
             }
-            if (53 in keysDown && this.items.includes("5. Battery")) { // === 5
+            if (53 in keysDown && this.items.includes("[5] Battery")) { // === 5
                 this.batteryPower += 50;
-                this.items.splice( this.items.indexOf("5. Battery"), 1 );
+                this.items.splice( this.items.indexOf("[5] Battery"), 1 );
 
             }
         };
@@ -203,7 +207,7 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             // context2.textAlign = "left";
             context2.fillText(`Level: ${this.level + 1}`, 0, 25);
             context2.fillText(`Sprint: ${this.jumpPower}`, 0, 50);
-            if (this.keys[0] === 'Key'){
+            if (this.keys[0] === 'Key: In Inventory'){
                 context2.fillStyle = "#F8Cf5F";
             }
             context2.fillText( `${this.keys[0] || "Key: Missing"}`, 0, 100);
@@ -216,12 +220,15 @@ function Player(context, centerDegree, flashlightWidth, radius, color, color2, m
             context2.fillText(`${this.items[0] || ""}`, 275, 50);
             context2.fillText(`${this.items[1] || ""}`, 275, 75);
             context2.fillText(`${this.items[2] || ""}`, 275, 100);
-            context2.fillText(`Objective`, 375, 25);
-            context2.fillText(`Objective`, 375, 25);
-            if (this.keys[0] === 'Key'){
-                context2.fillText(`Find the Exit`, 375, 50); 
+            context2.fillText(`Objectives`, 375, 25);
+            if (this.keys[0] === 'Key: In Inventory'){
+                context2.fillText(`Find the Key`, 375, 50);
+                var text = context2.measureText("Find the Key");
+                context2.fillRect(375, 45, text.width, 2);
+                context2.fillText(`Find the Exit`, 375, 75); 
             } else {
-                context2.fillText(`Find the Key`, 375, 50); 
+                context2.fillText(`Find the Key`, 375, 50);
+                context2.fillText(`Find the Exit`, 375, 75); 
             }
             if (this.batteryPower < 50){
                 context2.fillStyle = "#C53426";

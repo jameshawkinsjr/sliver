@@ -51,14 +51,11 @@ function Game(context){
     Game.prototype.update = () => {
         player.update();
         zombie1.update();
-        let playerX = player.x;
-        let playerY = player.y;
-        let zombieX = zombie1.x;
-        let zombieY = zombie1.y;
-        if ( Math.abs(playerX - zombieX) < 60 && Math.abs(playerY - zombieY) < 60 ){
+        if ( Math.abs(player.x - zombie1.x) < 10 && Math.abs(player.y - zombie1.y) < 10 ){
             this.level = -1;
+            player.level = -1;
         }
-        if ( Math.abs(playerX - zombieX) < 400 && Math.abs(playerY - zombieY) < 400 ){
+        if ( Math.abs(player.x - zombie1.x) < 400 && Math.abs(player.y - zombie1.y) < 400 ){
             zombieSound.play();
         } else {
             zombieSound.stop(); 
@@ -103,10 +100,15 @@ function Game(context){
         if (player.exit === true && this.level < 6) {
             this.level += 1;
             levelUpSound.play();
-            this.init(this.level);
+            this.init();
         }
         if (this.level === 6){
             welcome.winner();
+        }
+        if (player.continue === true && this.level === -1) {
+            this.level = 0;
+            levelUpSound.play();
+            this.init();
         }
         if (this.level === -1){
             welcome.loser();
