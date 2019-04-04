@@ -33,27 +33,28 @@ function Game(context){
     let gameMap;
     let zombie1;
     let welcome = new Welcome(context);
+    let zombieSound = new Sound('./images/zombie.m4a');
+    let dungeonSound = new Sound('./images/dripping.mp3');
+    let levelUpSound = new Sound('./images/teleport.wav');
+    let canvasMute = document.getElementById("canvas-mute");
+    let context4 = canvasMute.getContext('2d')
+    canvasMute.addEventListener('click', (e) => {
+        mute = !mute;
+        player.mute = !player.mute;
+        if (!mute){
+            dungeonSound.play(); 
+        } else {
+            dungeonSound.stop(); 
+        }
+    });
+
     Game.prototype.init = () => {
-        zombieSound = new Sound('./images/zombie.m4a');
-        dungeonSound = new Sound('./images/dripping.mp3');
-        levelUpSound = new Sound('./images/teleport.wav');
         if (!mute) dungeonSound.play();
         gameMap = new Map(mapArray[this.level], '#000000');
         gameMap.generate();
         player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, this.level, mute);
         let random = this.randomSpot();
         zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
-        let canvasMute = document.getElementById("canvas-mute");
-        let context4 = canvasMute.getContext('2d')
-        canvasMute.addEventListener('click', (e) => {
-            mute = !mute;
-            player.mute = !player.mute;
-            if (!mute){
-                dungeonSound.play(); 
-            } else {
-                dungeonSound.stop(); 
-            }
-        });
     };
 
     Game.prototype.randomSpot = () => {
@@ -144,11 +145,11 @@ function Game(context){
     };  
     ;
     Game.prototype.play = () => {
-        // welcome.draw();
-        // setTimeout(this.init, 13000);
-        // setTimeout(this.animate, 13500);
-        this.init();
-        this.animate();
+        welcome.draw();
+        setTimeout(this.init, 10000);
+        setTimeout(this.animate, 10500);
+        // this.init();
+        // this.animate();
         
     };
 }

@@ -33,26 +33,30 @@ function Map(inputMap, color){
                         context.closePath();
                     } else if (this.map[j][i] === 'b') {
                         context.save();
-                        let battery = new Image();
-                        battery.src = './images/battery.png';
+                        // let battery = new Image();
+                        // battery.src = './images/battery.png';
+                        let battery = document.getElementById("battery");
                         context.drawImage(battery, 0, 0, 30, 30, (i * 120 + 35), (j * 120 + 35), 30, 30);
                         context.restore();
                     } else if (this.map[j][i] === 'l') {
                         context.save();
-                        let lantern = new Image();
-                        lantern.src = './images/lantern.png';
+                        // let lantern = new Image();
+                        // lantern.src = './images/lantern.png';
+                        let lantern = document.getElementById("lantern");
                         context.drawImage(lantern, 0, 0, 46, 43, (i * 120 + 35), (j * 120 + 30), 46, 43);
                         context.restore();
                     } else if (this.map[j][i] === 'k') {
                         context.save();
-                        let key = new Image();
-                        key.src = './images/key.png';
+                        // let key = new Image();
+                        // key.src = './images/key.png';
+                        let key = document.getElementById("key");
                         context.drawImage(key, 0, 0, 40, 48, (i * 120 + 35), (j * 120 + 30), 28, 34);
                         context.restore();
                     } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
                         context.save();
-                        let portal = new Image();
-                        portal.src = './images/portal.png';
+                        // let portal = new Image();
+                        // portal.src = './images/portal.png';
+                        let portal = document.getElementById("portal");
                         context.drawImage(portal, 0, 0, 50, 50, (i * 120 + 35), (j * 120 + 30), 50, 50);
                         context.restore();
                     } else {
