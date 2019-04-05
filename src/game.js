@@ -60,7 +60,7 @@ function Game(context){
     });
 
     Game.prototype.init = () => {
-        console.log(originalMaps)
+
         if (!mute) dungeonSound.play();
         gameMap = new Map(mapArray[this.level], '#000000');
         gameMap.generate();
@@ -151,12 +151,12 @@ function Game(context){
         }
         if (player.continue === true && this.level === -1) {
             this.level = 0;
-            mapArray[0] = JSON.parse(JSON.stringify(originalMaps[0]))
-            mapArray[1] = JSON.parse(JSON.stringify(originalMaps[1]))
-            mapArray[2] = JSON.parse(JSON.stringify(originalMaps[2]))
-            mapArray[3] = JSON.parse(JSON.stringify(originalMaps[3]))
-            mapArray[4] = JSON.parse(JSON.stringify(originalMaps[4]))
-            mapArray[5] = JSON.parse(JSON.stringify(originalMaps[5]))
+            mapArray[0] = JSON.parse(JSON.stringify(originalMaps[0]));
+            mapArray[1] = JSON.parse(JSON.stringify(originalMaps[1]));
+            mapArray[2] = JSON.parse(JSON.stringify(originalMaps[2]));
+            mapArray[3] = JSON.parse(JSON.stringify(originalMaps[3]));
+            mapArray[4] = JSON.parse(JSON.stringify(originalMaps[4]));
+            mapArray[5] = JSON.parse(JSON.stringify(originalMaps[5]));
             if (!mute) levelUpSound.play();
             this.init();
         }
