@@ -36,30 +36,39 @@ function Map(inputMap, color){
                         // let battery = new Image();
                         // battery.src = './images/battery.png';
                         let battery = document.getElementById("battery");
-                        context.drawImage(battery, 0, 0, 30, 30, (i * 120 + 35), (j * 120 + 35), 30, 30);
+                        context.drawImage(battery, 0, 0, 120, 120, (i * 120), (j * 120), 120, 120);
                         context.restore();
                     } else if (this.map[j][i] === 'l') {
                         context.save();
                         // let lantern = new Image();
                         // lantern.src = './images/lantern.png';
                         let lantern = document.getElementById("lantern");
-                        context.drawImage(lantern, 0, 0, 46, 43, (i * 120 + 35), (j * 120 + 30), 46, 43);
+                        context.drawImage(lantern, 0, 0, 120, 120, (i * 120), (j * 120), 120, 120);
                         context.restore();
                     } else if (this.map[j][i] === 'k') {
                         context.save();
                         // let key = new Image();
                         // key.src = './images/key.png';
                         let key = document.getElementById("key");
-                        context.drawImage(key, 0, 0, 40, 48, (i * 120 + 35), (j * 120 + 30), 28, 34);
+                        context.drawImage(key, 0, 0, 120, 120, (i * 120), (j * 120), 120, 120);
                         context.restore();
                     } else if (this.map[j][i] === 'e' || this.map[j][i] === 'p' ) {
                         context.save();
                         // let portal = new Image();
                         // portal.src = './images/portal.png';
                         let portal = document.getElementById("portal");
-                        context.drawImage(portal, 0, 0, 50, 50, (i * 120 + 35), (j * 120 + 30), 50, 50);
+                        context.drawImage(portal, 0, 0, 120, 120, (i * 120), (j * 120), 120, 120);
                         context.restore();
                     } else {
+                        context.save();
+                        // let battery = new Image();
+                        // battery.src = './images/battery.png';
+                        let floor = document.getElementById("floor");
+                        context.drawImage(floor, 0, 0, 60, 60, (i * 120), (j * 120), 60, 60);
+                        context.drawImage(floor, 0, 0, 60, 60, (i * 120), (j * 120+60), 60, 60);
+                        context.drawImage(floor, 0, 0, 60, 60, (i * 120+60), (j * 120), 60, 60);
+                        context.drawImage(floor, 0, 0, 60, 60, (i * 120+60), (j * 120+60), 60, 60);
+                        context.restore();
                         this.blankSpots.push([x,y]);
                     }
                 }
