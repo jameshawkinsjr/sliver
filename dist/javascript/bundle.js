@@ -139,7 +139,6 @@ function Game(context) {
   });
 
   Game.prototype.init = function () {
-    console.log(originalMaps);
     if (!mute) dungeonSound.play();
     gameMap = new Map(mapArray[_this.level], '#000000');
     gameMap.generate();
