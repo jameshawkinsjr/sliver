@@ -63,20 +63,23 @@ function Player(context, centerDegree, flashlightWidth, radius, map, level, mute
             if (map.map[yTile][xTile] === 1){
                 return true;
             } else if (map.map[yTile][xTile] === 'b'){
+                if (!this.mute) itemSound.play();
                 this.items.push("[5] Battery");
                 map.map[yTile][xTile]  = 0;
+                this.c.drawImage(map.image, this.x-canvasWidth/2, this.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);   
                 this.map.generate();
-                if (!this.mute) itemSound.play();
             } else if (map.map[yTile][xTile] === 'l'){
-                this.items.push("[4] Lantern");
                 if (!this.mute) itemSound.play();
+                this.items.push("[4] Lantern");
                 map.map[yTile][xTile]  = 0;
+                this.c.drawImage(map.image, this.x-canvasWidth/2, this.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);   
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'k'){
+                if (!this.mute) itemSound.play();
                 this.keys[0] = "In Inventory";
                 this.items.push("Golden Key");
-                if (!this.mute) itemSound.play();
                 map.map[yTile][xTile]  = 0;
+                this.c.drawImage(map.image, this.x-canvasWidth/2, this.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);   
                 this.map.generate();
             } else if (map.map[yTile][xTile] === 'e' && this.keys[0] === "In Inventory"){
                 this.exit = true;
