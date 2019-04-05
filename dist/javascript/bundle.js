@@ -192,13 +192,7 @@ function Game(context) {
     zombie1.draw();
     context.save();
     var gradient = context.createRadialGradient(canvasWidth / 2, canvasHeight / 2, player.currentRadius / 5, canvasWidth / 2, canvasHeight / 2, player.currentRadius);
-
-    if (Math.floor(Math.random() * 50) === 5) {
-      gradient.addColorStop(0, "#000");
-    } else {
-      gradient.addColorStop(0, "transparent");
-    }
-
+    gradient.addColorStop(0, "transparent");
     gradient.addColorStop(1, "#000");
     context.beginPath(canvasWidth / 2, canvasHeight / 2);
     context.arc(canvasWidth / 2, canvasHeight / 2, canvasHeight, player.startAngle, player.endAngle, false);
@@ -263,7 +257,7 @@ function Game(context) {
   ;
 
   Game.prototype.play = function () {
-    welcome.draw();
+    setTimeout(welcome.draw, 6000);
     setTimeout(_this.init, 10000);
     setTimeout(_this.animate, 10500); // this.init();
     // this.animate();
@@ -308,8 +302,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     mouse.x = pos.x;
     mouse.y = pos.y;
   });
-  var game = new Game(context); // setTimeout(game.play, 8000);
-
+  var game = new Game(context);
   game.play();
 });
 
@@ -357,37 +350,28 @@ function Map(inputMap, color) {
           context.fill();
           context.closePath();
         } else if (_this.map[j][i] === 'b') {
-          context.save(); // let battery = new Image();
-          // battery.src = './images/battery.png';
-
+          context.save();
           var battery = document.getElementById("battery");
           context.drawImage(battery, 0, 0, 120, 120, i * 120, j * 120, 120, 120);
           context.restore();
         } else if (_this.map[j][i] === 'l') {
-          context.save(); // let lantern = new Image();
-          // lantern.src = './images/lantern.png';
-
+          context.save();
           var lantern = document.getElementById("lantern");
           context.drawImage(lantern, 0, 0, 120, 120, i * 120, j * 120, 120, 120);
           context.restore();
         } else if (_this.map[j][i] === 'k') {
-          context.save(); // let key = new Image();
-          // key.src = './images/key.png';
-
+          context.save();
           var key = document.getElementById("key");
           context.drawImage(key, 0, 0, 120, 120, i * 120, j * 120, 120, 120);
           context.restore();
         } else if (_this.map[j][i] === 'e' || _this.map[j][i] === 'p') {
-          context.save(); // let portal = new Image();
-          // portal.src = './images/portal.png';
-
+          context.save();
+          ;
           var portal = document.getElementById("portal");
           context.drawImage(portal, 0, 0, 120, 120, i * 120, j * 120, 120, 120);
           context.restore();
         } else {
-          context.save(); // let battery = new Image();
-          // battery.src = './images/battery.png';
-
+          context.save();
           var floor = document.getElementById("floor");
           context.drawImage(floor, 0, 0, 60, 60, i * 120, j * 120, 60, 60);
           context.drawImage(floor, 0, 0, 60, 60, i * 120, j * 120 + 60, 60, 60);
@@ -519,27 +503,34 @@ function Player(context, centerDegree, flashlightWidth, radius, map, level, mute
     if (map.map[yTile][xTile] === 1) {
       return true;
     } else if (map.map[yTile][xTile] === 'b') {
+      if (!_this.mute) itemSound.play();
+
       _this.items.push("[5] Battery");
 
       map.map[yTile][xTile] = 0;
 
-      _this.map.generate();
+      _this.c.drawImage(map.image, _this.x - canvasWidth / 2, _this.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
 
-      if (!_this.mute) itemSound.play();
+      _this.map.generate();
     } else if (map.map[yTile][xTile] === 'l') {
+      if (!_this.mute) itemSound.play();
+
       _this.items.push("[4] Lantern");
 
-      if (!_this.mute) itemSound.play();
       map.map[yTile][xTile] = 0;
+
+      _this.c.drawImage(map.image, _this.x - canvasWidth / 2, _this.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
 
       _this.map.generate();
     } else if (map.map[yTile][xTile] === 'k') {
+      if (!_this.mute) itemSound.play();
       _this.keys[0] = "In Inventory";
 
       _this.items.push("Golden Key");
 
-      if (!_this.mute) itemSound.play();
       map.map[yTile][xTile] = 0;
+
+      _this.c.drawImage(map.image, _this.x - canvasWidth / 2, _this.y - canvasWidth / 2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
 
       _this.map.generate();
     } else if (map.map[yTile][xTile] === 'e' && _this.keys[0] === "In Inventory") {

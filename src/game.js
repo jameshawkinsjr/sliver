@@ -109,11 +109,7 @@ function Game(context){
             let gradient = context.createRadialGradient(
                 canvasWidth/2, canvasHeight/2, player.currentRadius/5, 
                 canvasWidth/2, canvasHeight/2, player.currentRadius);
-            if ((Math.floor(Math.random() * 50) === 5)){
-                gradient.addColorStop(0, "#000");
-            } else {
-                gradient.addColorStop(0, "transparent");
-            }
+            gradient.addColorStop(0, "transparent");
             gradient.addColorStop(1, "#000");
             context.beginPath(canvasWidth/2, canvasHeight/2);
             context.arc(canvasWidth/2, canvasHeight/2, canvasHeight, player.startAngle, player.endAngle, false);
@@ -166,7 +162,7 @@ function Game(context){
     };  
     ;
     Game.prototype.play = () => {
-        welcome.draw();
+        setTimeout(welcome.draw, 6000);
         setTimeout(this.init, 10000);
         setTimeout(this.animate, 10500);
         // this.init();

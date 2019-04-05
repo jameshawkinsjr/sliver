@@ -133,7 +133,7 @@ main {
 
 #game-canvas {
     /* border: 1px solid red; */
-    /* -webkit-animation: unfoldIn 9s 1; */
+    -webkit-animation: unfoldIn 9s 1;
 }
 
 @keyframes unfoldIn {
@@ -148,7 +148,7 @@ main {
         border: 1px solid white;
         transform:scaleY(1) scaleX(1);
     }
-    100% {
+    80% {
         border: 1px solid black;
     }
   }
