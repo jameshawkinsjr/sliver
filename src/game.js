@@ -18,14 +18,26 @@ function Game(context){
                   window.setTimeout(callback, 1000 / 60); 
                 }; 
       })(); 
+
+      
+
+      
+      let mapArray = [
+          maps.map1,
+          maps.map2,
+          maps.map3,
+          maps.map4,
+          maps.map5,
+          maps.map6,
+        ];
     
-    let mapArray = [
-        maps.map1,
-        maps.map2,
-        maps.map3,
-        maps.map4,
-        maps.map5,
-        maps.map6,
+    let originalMaps = [
+        JSON.parse(JSON.stringify(maps.map1)),
+        JSON.parse(JSON.stringify(maps.map2)),
+        JSON.parse(JSON.stringify(maps.map3)),
+        JSON.parse(JSON.stringify(maps.map4)),
+        JSON.parse(JSON.stringify(maps.map5)),
+        JSON.parse(JSON.stringify(maps.map6))
     ];
 
     let mute = false;
@@ -37,7 +49,6 @@ function Game(context){
     let dungeonSound = new Sound('./images/dripping.mp3');
     let levelUpSound = new Sound('./images/teleport.wav');
     let canvasMute = document.getElementById("canvas-mute");
-    let context4 = canvasMute.getContext('2d')
     canvasMute.addEventListener('click', (e) => {
         mute = !mute;
         player.mute = !player.mute;
@@ -49,10 +60,11 @@ function Game(context){
     });
 
     Game.prototype.init = () => {
+        console.log(originalMaps)
         if (!mute) dungeonSound.play();
         gameMap = new Map(mapArray[this.level], '#000000');
         gameMap.generate();
-        player = new Player(context, 0, 60, 300, '#797939', 'black', gameMap, this.level, mute);
+        player = new Player(context, 0, 60, 300, gameMap, this.level, mute);
         let random = this.randomSpot();
         zombie1 = new Zombie(context, gameMap, player, random[0] + 50, random[1] + 50);
     };
@@ -62,7 +74,6 @@ function Game(context){
     }
 
     Game.prototype.update = () => {
-        player.update();
         zombie1.update();
         if ( Math.abs(player.x - zombie1.x) < 30 && Math.abs(player.y - zombie1.y) < 30 ){
             this.level = -1;
@@ -93,11 +104,16 @@ function Game(context){
 
     Game.prototype.shade = () => {
         context.drawImage(gameMap.image, player.x-canvasWidth/2, player.y-canvasWidth/2, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);   
+        zombie1.draw();
         context.save();
             let gradient = context.createRadialGradient(
                 canvasWidth/2, canvasHeight/2, player.currentRadius/5, 
                 canvasWidth/2, canvasHeight/2, player.currentRadius);
-            gradient.addColorStop(0, "transparent");
+            if ((Math.floor(Math.random() * 50) === 5)){
+                gradient.addColorStop(0, "#000");
+            } else {
+                gradient.addColorStop(0, "transparent");
+            }
             gradient.addColorStop(1, "#000");
             context.beginPath(canvasWidth/2, canvasHeight/2);
             context.arc(canvasWidth/2, canvasHeight/2, canvasHeight, player.startAngle, player.endAngle, false);
@@ -117,7 +133,6 @@ function Game(context){
     Game.prototype.draw = () => {
         context.clearRect(0, 0, canvasWidth, canvasHeight);  
         player.draw();
-        zombie1.draw();
         this.shade();
         player.drawSprite();
     } 
@@ -136,6 +151,12 @@ function Game(context){
         }
         if (player.continue === true && this.level === -1) {
             this.level = 0;
+            mapArray[0] = JSON.parse(JSON.stringify(originalMaps[0]))
+            mapArray[1] = JSON.parse(JSON.stringify(originalMaps[1]))
+            mapArray[2] = JSON.parse(JSON.stringify(originalMaps[2]))
+            mapArray[3] = JSON.parse(JSON.stringify(originalMaps[3]))
+            mapArray[4] = JSON.parse(JSON.stringify(originalMaps[4]))
+            mapArray[5] = JSON.parse(JSON.stringify(originalMaps[5]))
             if (!mute) levelUpSound.play();
             this.init();
         }
