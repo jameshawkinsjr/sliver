@@ -6,19 +6,23 @@
 
 [Play a live version here](https://jameshawkinsjr.github.io/sliver/dist/)
 
-_sliver_ is a top-down game about searching for a key in darkness with limited sources of light.
+_sliver_ is a original concept, in browser game about finding a way out with limited sources of light.
     
-## Background and Overview
 
-#### **Motivation for project:**
-   * Learn how to use Canvas and some basic game mechanics
-#### **Description:**
-   * A top-down game with a sprite that's in a darkened room. They can only see a sliver of light ahead of them and have to traverse through a map to get to the next room. All the while, enemies are randomly walking around as well. Encountering an enemy hurts you.
+## Technologies
+
+* HTML5, Canvas, JavaScript, SASS, Webpack
+
+## Game Features
+
+* Limited sliver of flashlight follows the player's mouse in order to navigate the maze
+* Pick up and use items
+* Collsion detection with enemies that randomly wander around the maze
    
    <p align="center">
-    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/dist/images/sliver_wireframe.png" alt="wireframe" width="600">
+    <img src="https://github.com/jameshawkinsjr/sliver/blob/master/dist/images/sliver.gif" alt="gameplay" width="600">
 
-   <p align="center">sliver wireframe</p>
+   <p align="center">sliver gameplay</p>
    
    </p>
    
