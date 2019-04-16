@@ -11,9 +11,9 @@ _sliver_ is a original concept, in browser game about finding a way out with lim
 
 ## Technologies
 
-* JavaScript for keeping control of game logic and state
-* HTML5 Canvas for rendering the player, map, items, enemies, and player statistics
-* Webpack for script bundling
+* JavaScript // keeping control of game logic and state
+* HTML5 Canvas // rendering the player, map, items, enemies, and player statistics
+* Webpack // script bundling
 
 
 ## Game Features
