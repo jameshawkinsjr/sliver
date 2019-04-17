@@ -95,10 +95,14 @@ function Game(context){
         context4.clearRect(0, 0, canvasWidth, canvasHeight);  
         context4.font="25px Arima Madurai";
         context4.fillStyle = "white";
+        let muteButton = new Image();
+        let ummuteButton = new Image();
+        muteButton.src = './images/mute.png';
+        ummuteButton.src = './images/unmute.png';
         if (mute){
-            context4.fillText(`🔇`, 50, 25);
+            context4.drawImage(ummuteButton, 0, 0, 22, 22, 50, 5, 22, 22);
         } else {
-            context4.fillText(`🔈`, 50, 25);
+            context4.drawImage(muteButton, 0, 0, 22, 22, 50, 5, 22, 22);
         }
     };
 
@@ -162,11 +166,11 @@ function Game(context){
     };  
     ;
     Game.prototype.play = () => {
-        setTimeout(welcome.draw, 6000);
-        setTimeout(this.init, 10000);
-        setTimeout(this.animate, 10500);
-        // this.init();
-        // this.animate();
+        // setTimeout(welcome.draw, 6000);
+        // setTimeout(this.init, 10000);
+        // setTimeout(this.animate, 10500);
+        this.init();
+        this.animate();
         
     };
 }

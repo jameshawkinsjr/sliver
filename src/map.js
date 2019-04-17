@@ -1,5 +1,3 @@
-var Sprite = require('./sprite');
-
 function Map(inputMap, color){
         this.map = [].concat(inputMap);
         this.rowWidth = 120;

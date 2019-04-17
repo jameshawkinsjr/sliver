@@ -179,11 +179,15 @@ function Game(context) {
     context4.clearRect(0, 0, canvasWidth, canvasHeight);
     context4.font = "25px Arima Madurai";
     context4.fillStyle = "white";
+    var muteButton = new Image();
+    var ummuteButton = new Image();
+    muteButton.src = './images/mute.png';
+    ummuteButton.src = './images/unmute.png';
 
     if (mute) {
-      context4.fillText("\uD83D\uDD07", 50, 25);
+      context4.drawImage(ummuteButton, 0, 0, 22, 22, 50, 5, 22, 22);
     } else {
-      context4.fillText("\uD83D\uDD08", 50, 25);
+      context4.drawImage(muteButton, 0, 0, 22, 22, 50, 5, 22, 22);
     }
   };
 
@@ -257,10 +261,12 @@ function Game(context) {
   ;
 
   Game.prototype.play = function () {
-    setTimeout(welcome.draw, 6000);
-    setTimeout(_this.init, 10000);
-    setTimeout(_this.animate, 10500); // this.init();
-    // this.animate();
+    // setTimeout(welcome.draw, 6000);
+    // setTimeout(this.init, 10000);
+    // setTimeout(this.animate, 10500);
+    _this.init();
+
+    _this.animate();
   };
 }
 
@@ -313,9 +319,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   !*** ./src/map.js ***!
   \********************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Sprite = __webpack_require__(/*! ./sprite */ "./src/sprite.js");
+/***/ (function(module, exports) {
 
 function Map(inputMap, color) {
   var _this = this;
@@ -797,82 +801,6 @@ module.exports = Sound;
 
 /***/ }),
 
-/***/ "./src/sprite.js":
-/*!***********************!*\
-  !*** ./src/sprite.js ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function Sprite() {
-  var coin, coinImage, canvas;
-
-  function gameLoop() {
-    window.requestAnimationFrame(gameLoop);
-    coin.update();
-    coin.render();
-  }
-
-  function sprite(options) {
-    var that = {},
-        frameIndex = 0,
-        tickCount = 0,
-        ticksPerFrame = options.ticksPerFrame || 0,
-        numberOfFrames = options.numberOfFrames || 1;
-    that.context = options.context;
-    that.width = options.width;
-    that.height = options.height;
-    that.image = options.image;
-
-    that.update = function () {
-      tickCount += 1;
-
-      if (tickCount > ticksPerFrame) {
-        tickCount = 0; // If the current frame index is in range
-
-        if (frameIndex < numberOfFrames - 1) {
-          // Go to the next frame
-          frameIndex += 1;
-        } else {
-          frameIndex = 0;
-        }
-      }
-    };
-
-    that.render = function () {
-      // Clear the canvas
-      that.context.clearRect(0, 0, that.width, that.height); // Draw the animation
-
-      that.context.drawImage(that.image, frameIndex * that.width / numberOfFrames, 0, that.width / numberOfFrames, that.height, 0, 0, that.width / numberOfFrames, that.height);
-    };
-
-    return that;
-  } // Get canvas
-
-
-  canvas = document.getElementById("battery-level");
-  canvas.width = 10;
-  canvas.height = 10; // Create sprite sheet
-
-  coinImage = new Image(); // Create sprite
-
-  coin = sprite({
-    context: canvas.getContext("2d"),
-    width: 1000,
-    height: 100,
-    image: coinImage,
-    numberOfFrames: 10,
-    ticksPerFrame: 4
-  }); // Load sprite sheet
-
-  coinImage.addEventListener("load", gameLoop);
-  coinImage.src = "../src/images/coin.png";
-}
-
-module.exports = Sprite;
-
-/***/ }),
-
 /***/ "./src/welcome.js":
 /*!************************!*\
   !*** ./src/welcome.js ***!
@@ -916,19 +844,7 @@ function Welcome(context) {
 
   Welcome.prototype.zombies = function () {
     context.fillText("don't let the zombies catch you.", 0, 400);
-  }; // Welcome.prototype.controls = () => {
-  //     context.clearRect(0, 0, canvasWidth, canvasHeight);
-  //     context.font="45px Arima Madurai";
-  //     context.fillStyle = "#b7b7b7";
-  //     context.fillText(`controls`, canvasWidth/2-80, 100);
-  //     context.font="30px Arima Madurai";
-  //     context.fillText(`up (w)`, canvasWidth/2-45, 200);
-  //     context.fillText(`left (a) / down (s) / right (d)`, canvasWidth/2-180, 250);
-  //     context.fillText(`look around (mouse)`, canvasWidth/2-130, 350);
-  //     context.fillText(`sprint (space)`, canvasWidth/2-80, 400);
-  //     context.fillText(`items (numbers 1-9)`, canvasWidth/2-130, 500);
-  // }
-
+  };
 
   Welcome.prototype.draw = function () {
     _this.welcome();
