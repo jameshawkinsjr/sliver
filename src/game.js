@@ -166,11 +166,11 @@ function Game(context){
     };  
     ;
     Game.prototype.play = () => {
-        // setTimeout(welcome.draw, 6000);
-        // setTimeout(this.init, 10000);
-        // setTimeout(this.animate, 10500);
-        this.init();
-        this.animate();
+        setTimeout(welcome.draw, 6000);
+        setTimeout(this.init, 10000);
+        setTimeout(this.animate, 10500);
+        // this.init();
+        // this.animate();
         
     };
 }
