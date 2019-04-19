@@ -261,12 +261,10 @@ function Game(context) {
   ;
 
   Game.prototype.play = function () {
-    // setTimeout(welcome.draw, 6000);
-    // setTimeout(this.init, 10000);
-    // setTimeout(this.animate, 10500);
-    _this.init();
-
-    _this.animate();
+    setTimeout(welcome.draw, 6000);
+    setTimeout(_this.init, 10000);
+    setTimeout(_this.animate, 10500); // this.init();
+    // this.animate();
   };
 }
 
